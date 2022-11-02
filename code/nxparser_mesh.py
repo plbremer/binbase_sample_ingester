@@ -1,7 +1,7 @@
 import networkx as nx
 from collections import defaultdict
 
-class NXParser:
+class NXParserMesh:
 
     def __init__(self):
         self.mesh_nx=nx.DiGraph()
@@ -130,6 +130,8 @@ class NXParser:
 
 
 if __name__=="__main__":
-    my_NXParser=NXParser()
+    my_NXParser=NXParserMesh()
     my_NXParser.make_mesh_nx('../resources/mesh_ascii_2021.txt')
     print(my_NXParser.mesh_nx.nodes)
+
+    ### need to save these nx to file
