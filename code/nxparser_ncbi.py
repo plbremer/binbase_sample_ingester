@@ -10,4 +10,4 @@ class NXParserNCBI:
 
 if __name__=="__main__":
     my_NXParserNCBI=NXParserNCBI()
-    
+    nx.write_gpickle(my_NXParserNCBI.ncbi_nx,'../intermediate_results/nxs/ncbi_nx.bin')

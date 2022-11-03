@@ -130,8 +130,9 @@ class NXParserMesh:
 
 
 if __name__=="__main__":
-    my_NXParser=NXParserMesh()
-    my_NXParser.make_mesh_nx('../resources/mesh_ascii_2021.txt')
-    print(my_NXParser.mesh_nx.nodes)
+    my_NXParser_mesh=NXParserMesh()
+    my_NXParser_mesh.make_mesh_nx('../resources/mesh_ascii_2021.txt')
+    #print(my_NXParser.mesh_nx.nodes)
+    nx.write_gpickle(my_NXParser_mesh.mesh_nx,'../intermediate_results/nxs/mesh_nx.bin')
 
     ### need to save these nx to file
