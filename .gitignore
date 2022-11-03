@@ -1,2 +1,4 @@
 *.txt
 *.dmp
+*.json
+*.bin
