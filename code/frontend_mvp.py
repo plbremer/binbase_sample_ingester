@@ -6,6 +6,7 @@ import dash_cytoscape as cyto
 from dash import callback_context
 from time import time
 from pprint import pprint
+import json
 
 app = dash.Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.SLATE])#external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -72,7 +73,7 @@ app.layout = html.Div(
             multi=False,
         ),
         dbc.Button(
-            'Add node',
+            'Add node property',
             id='button_add_node_property',
         ),
         dcc.Dropdown(
@@ -86,7 +87,13 @@ app.layout = html.Div(
             'Add edge',
             id='button_add_edge',
         ),
-
+        dcc.Download(
+            id='download_graph'
+        ),
+        dbc.Button(
+            'Download Graph',
+            id='button_download_graph',
+        ),
     ]
 )
 @callback(
@@ -157,12 +164,49 @@ def add_node(
                 {
                     'source':cyto_sample_nature_selectedNodeData[0]['id'],
                     'target':cyto_sample_nature_selectedNodeData[1]['id'],#,
-                    'label':dropdown_edge_property_value
+                    'label':dropdown_edge_property_value,
+                    'id':time()
                 }
             }
         )
 
     return [cyto_sample_nature_elements]
+
+@callback(
+    [
+        Output(component_id='download_graph', component_property="data"),
+    ],
+    [
+        Input(component_id='button_download_graph', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='cyto_sample_nature', component_property="elements"),
+    ],
+    prevent_initial_call=True
+)
+def download_graph(
+    button_download_graph_n_clicks,
+    cyto_sample_nature_elements
+):
+    pprint(cyto_sample_nature_elements)
+    # return [
+    #     dict(
+    #         content=cyto_sample_nature_elements,
+    #         filename='temp_graph_as_txt.txt'
+    #     )
+    # ]
+    print('-'*50)
+    print(
+        json.dumps(
+            cyto_sample_nature_elements
+        )
+    )
+    return [dict(
+        content=json.dumps(cyto_sample_nature_elements),
+        filename='temp_graph_as_txt.txt'
+    )]
+
+
 
 # @callback(
 #     [
