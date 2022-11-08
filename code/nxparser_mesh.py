@@ -127,6 +127,14 @@ class NXParserMesh:
             ]
         self.mesh_nx.remove_nodes_from(nodes_to_remove)
 
+    def construct_graphml_for_neo4j(self):
+        #based on
+        #https://stackoverflow.com/questions/65973902/which-elements-from-networkx-graph-might-become-labels-at-neo4j-graph
+        for temp_node in self.mesh_nx.nodes:
+            self.mesh_nx.nodes[temp_node]['labels']=':MESH_NODE'
+            self.mesh_nx.nodes[temp_node]['mesh_id']=temp_node
+        for temp_edge in self.mesh_nx.edges:
+            self.mesh_nx.edges[temp_edge]['label']='PARENT_OF'
 
 
 if __name__=="__main__":
@@ -135,4 +143,6 @@ if __name__=="__main__":
     #print(my_NXParser.mesh_nx.nodes)
     nx.write_gpickle(my_NXParser_mesh.mesh_nx,'../intermediate_results/nxs/mesh_nx.bin')
 
+    my_NXParser_mesh.construct_graphml_for_neo4j()
+    nx.write_graphml(my_NXParser_mesh.mesh_nx, '../intermediate_results/graphmls/mesh_graphml.graphml', named_key_ids=True)
     ### need to save these nx to file

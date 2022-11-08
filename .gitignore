@@ -2,3 +2,4 @@
 *.dmp
 *.json
 *.bin
+*.graphml
