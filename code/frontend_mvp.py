@@ -8,7 +8,7 @@ from time import time
 from pprint import pprint
 import json
 
-app = dash.Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.SLATE])#external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.BOOTSTRAP])#external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = html.Div(
     children=[
@@ -28,9 +28,19 @@ app.layout = html.Div(
                     
                 },
                 {
-                    'selector':'edge[label',
+                    'selector':'edge[label]',
                     'style':{
                         'label':'data(label)',
+                        #'text-wrap':'wrap',
+                        #'text-max-width':100,
+                        #'font-size':13
+                    } 
+                },
+                {
+                    'selector':'edge',
+                    'style':{
+                        'curve-style': 'bezier',
+                        'source-arrow-shape': 'triangle',
                         #'text-wrap':'wrap',
                         #'text-max-width':100,
                         #'font-size':13
@@ -54,9 +64,19 @@ app.layout = html.Div(
             maxZoom=5
         ),
         dcc.Dropdown(
+            id='dropdown_node_sample',
+            options=[1,2,3,4,5],
+            value=None,
+            multi=False,
+        ),
+        dbc.Button(
+            'Add Sample Nodes',
+            id='button_add_node_sample',
+        ),
+        dcc.Dropdown(
             id='dropdown_node_type',
             options=sorted(
-                ['species','organ','location']
+                ['species','organ','location','status']
             ),
             value=None,
             multi=False,
@@ -68,7 +88,7 @@ app.layout = html.Div(
         dcc.Dropdown(
             id='dropdown_node_property',
             options=sorted(
-                ['mouse','cow','male','female','heated','cooled']
+                ['quercus lobata','mouse','cow','male','female','heated','cooled','plant leaves','damaged','highway']
             ),
             multi=False,
         ),
@@ -79,7 +99,7 @@ app.layout = html.Div(
         dcc.Dropdown(
             id='dropdown_edge_type',
             options=sorted(
-                ['infected_by','treated_by','nearby']
+                ['derived_from','infected_by','treated_by','nearby']
             ),
             multi=False,
         ),
@@ -96,17 +116,21 @@ app.layout = html.Div(
         ),
     ]
 )
+
+
 @callback(
     [
         Output(component_id='cyto_sample_nature', component_property="elements"),
     ],
     [
+        Input(component_id='button_add_node_sample', component_property='n_clicks'),
         Input(component_id='button_add_node', component_property='n_clicks'),
         Input(component_id='button_add_node_property', component_property='n_clicks'),
         Input(component_id='button_add_edge', component_property='n_clicks'),
     ],
     [
         State(component_id='cyto_sample_nature', component_property="elements"),
+        State(component_id='dropdown_node_sample', component_property="value"),
         State(component_id='dropdown_node_type', component_property="value"),
         State(component_id='cyto_sample_nature', component_property='tapNodeData'),
         State(component_id='dropdown_node_property', component_property="value"),
@@ -116,10 +140,12 @@ app.layout = html.Div(
     prevent_initial_call=True
 )
 def add_node(
+    button_add_node_sample_n_clicks,
     button_add_node_n_clicks,
     button_add_node_property_n_clicks,
     button_add_edge_n_clicks,
     cyto_sample_nature_elements,
+    dropdown_node_sample_value,
     dropdown_node_type_value,
     cyto_sample_nature_tapNodeData,
     dropdown_node_property_value,
@@ -129,7 +155,15 @@ def add_node(
     print(callback_context.triggered[0]['prop_id'])
 
 
-    if callback_context.triggered[0]['prop_id']=='button_add_node.n_clicks':
+    if callback_context.triggered[0]['prop_id']=='button_add_node_sample.n_clicks':
+        for i in range(0,dropdown_node_sample_value):
+            cyto_sample_nature_elements.append(
+                {'data':
+                    {'id':i,'label':'Sample '+str(i)}
+                }
+            )
+
+    elif callback_context.triggered[0]['prop_id']=='button_add_node.n_clicks':
         cyto_sample_nature_elements.append(
             {'data':
                 {'id':time(),'label':dropdown_node_type_value}
