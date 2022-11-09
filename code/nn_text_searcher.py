@@ -10,6 +10,7 @@ class NNTextSearcher:
 
     def __init__(self,json_base_address):
         temp_file_address_list=os.listdir(json_base_address)
+        temp_file_address_list.sort()
         #print(temp_file_list)
         temp_file_list=list()
         for temp_file in temp_file_address_list:
@@ -49,8 +50,11 @@ if __name__ =="__main__":
     with open('../intermediate_results/models_and_matrices_webapp/TfidfVectorizer.bin','wb') as fp:
         pickle.dump(my_NNTextSearcher.TfidfVectorizer, fp)
 
-    with open('../intermediate_results/models_and_matrices_webapp/TfidfVectorizer.bin','wb') as fp:
-        pickle.dump(my_NNTextSearcher.TfidfVectorizer, fp)
+    with open('../intermediate_results/models_and_matrices_webapp/NN_model.bin','wb') as fp:
+        pickle.dump(my_NNTextSearcher.NN_model, fp)
+
+    with open('../intermediate_results/models_and_matrices_webapp/training_set_list.json','w') as fp:
+        json.dump(my_NNTextSearcher.training_set, fp)
 
     start=time.time()
     my_test_string_list=['utero']
