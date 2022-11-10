@@ -68,7 +68,7 @@ class FrontendHelper:
             self.property_dict[temp_record[1][0]].append(temp_record[2])
         pprint(self.property_dict)
 
-    def get_node_labels_for_string(self,temp_string):
+    def get_node_labels_for_string(self,temp_string,temp_driver):
         '''
         the point of this is to get all of the node labels, etc for a given text string
         basically, it helps populat the short list (so that 'plasma' appears as Plasma-MESH_NODE)
@@ -95,16 +95,15 @@ class FrontendHelper:
         # scientific_name Azorhizobium
 
         results_list=list()
-        driver=GraphDatabase.driver('bolt://localhost:7687',auth=('neo4j','elaine123'))
+        #driver=GraphDatabase.driver('bolt://localhost:7687',auth=('neo4j','elaine123'))
         query=f'''match (n) where n.id='{temp_string}' return n limit 5'''
-        with driver.session() as my_session:
+        #with driver.session() as my_session:
+        with temp_driver.session() as my_session:
             my_results=my_session.run(query)
-        #print(dir(my_results))
-        #print(my_results._summary)
             for element in my_results:
                 results_list.append(element)
-        driver.close()
-        pprint(results_list)
+        #driver.close()
+        #pprint(results_list)
         return results_list
 
     def generate_nodes_from_freetext_string(self,freetext_string):
@@ -124,6 +123,14 @@ class FrontendHelper:
             )
         #print(total_results)
         return total_results
+
+
+    def construct_smart_node_selection_options(self):
+        '''
+        putting "humans" into the taxonomy thing did not work out well. it returns "human" and "humans" one is a species and one is a genus
+        there needs to be more detail so that people chosoe the righ thing
+        '''
+        pass
 
 
 if __name__=="__main__":

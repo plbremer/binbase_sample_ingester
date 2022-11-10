@@ -9,6 +9,10 @@ from pprint import pprint
 import json
 from frontend_helper import *
 
+from neo4j import GraphDatabase
+driver=GraphDatabase.driver('bolt://localhost:7687',auth=('neo4j','elaine123'))
+
+
 app = dash.Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.BOOTSTRAP])#external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 asdf='hello'
@@ -60,18 +64,25 @@ def download_graph(
     button_nodesearch_n_clicks,
     input_nodesearch_value
 ): 
+    
     #print(asdf)
     #print(input_nodesearch_value)
     #print(my_FrontendHelper.total_node_id_dict)
-    temp_results=my_FrontendHelper.generate_nodes_from_freetext_string('Liver Neoplasms')
-    #form of temp results:[('Liver Neoplasms', 'C06.552.697'), ('Ear Neoplasms', 'C09.647.312')]
+    temp_results=my_FrontendHelper.generate_nodes_from_freetext_string(input_nodesearch_value)
+    #form of temp results:[('Liver Neoplasms', ['C04.588.274.623', 'C06.301.623', 'C06.552.697']), ('Ear Neoplasms', ['C04.588.443.665.312', 'C09.218.334', 'C09.647.312']),
     for freetext_match in temp_results:
-        for node in freetext_match[1]:
+        for counter,node in enumerate(freetext_match[1]):
         #we accidentally overwrote mesh labels that appeared multiple times in our note_and_attribute_jsons
         #so this funciton needs to get reworked
-            print(my_FrontendHelper.get_node_labels_for_string(node))
+            #for the moment, we are making the design decision that a text strin must automatically confer all nodes to which it belongs
+            #eg, the user is not interested in obtaining all of the results for all of the node id for some "Iris Neoplasms"
+            #so we only need the first    
+            if counter>=1:
+                continue
+        print(my_FrontendHelper.get_node_labels_for_string(node,driver))
     print(temp_results)
-    return [[1,2,3]]
+    #driver.close()
+    return [[element[0] for element in temp_results]]
 
 if __name__ == "__main__":
     app.run(debug=True)#, host='0.0.0.0')
