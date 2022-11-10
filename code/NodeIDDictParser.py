@@ -72,7 +72,7 @@ if __name__ == "__main__":
     with open('../intermediate_results/attribute_node_id_pairs/ncbi.json', 'w') as fp:
         json.dump(my_NodeIDDictParser.total_feature_node_id_dict, fp,indent=4)
 
-    my_NodeIDDictParser=NodeIDDictParser('../intermediate_results/nxs/mesh_nx.bin',{'mesh_label'})
+    my_NodeIDDictParser=NodeIDDictParser('../intermediate_results/nxs/mesh_nx.bin',{'mesh_label','common_name'})
     #'../resources/mesh_ascii_2021.txt'
     my_NodeIDDictParser.create_all_attribute_to_node_id_dict()
     with open('../intermediate_results/attribute_node_id_pairs/mesh.json', 'w') as fp:

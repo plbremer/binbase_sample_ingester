@@ -57,7 +57,7 @@ if __name__ =="__main__":
         json.dump(my_NNTextSearcher.training_set, fp,indent=4)
 
     start=time.time()
-    my_test_string_list=['human']
+    my_test_string_list=['Cancer']
     my_test_strings_vector=my_NNTextSearcher.TfidfVectorizer.transform(my_test_string_list)
     kn_dist,kn_ind=my_NNTextSearcher.NN_model.kneighbors(my_test_strings_vector,100)
     end=time.time()
