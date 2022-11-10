@@ -22,7 +22,7 @@ class NNTextSearcher:
             self.total_node_id_dict.update(temp_dict)
 
     def create_tfidf_matrix(self):
-        self.training_set=[element.lower() for element in self.total_node_id_dict.keys()]
+        self.training_set=[element for element in self.total_node_id_dict.keys()]
         self.TfidfVectorizer=TfidfVectorizer(
             analyzer=trigrams,
             #max_df=1,
@@ -54,10 +54,10 @@ if __name__ =="__main__":
         pickle.dump(my_NNTextSearcher.NN_model, fp)
 
     with open('../intermediate_results/models_and_matrices_webapp/training_set_list.json','w') as fp:
-        json.dump(my_NNTextSearcher.training_set, fp)
+        json.dump(my_NNTextSearcher.training_set, fp,indent=4)
 
     start=time.time()
-    my_test_string_list=['utero']
+    my_test_string_list=['human']
     my_test_strings_vector=my_NNTextSearcher.TfidfVectorizer.transform(my_test_string_list)
     kn_dist,kn_ind=my_NNTextSearcher.NN_model.kneighbors(my_test_strings_vector,100)
     end=time.time()
