@@ -62,7 +62,7 @@ class FrontendHelper:
         unique_nodeLabel_set=set()
         for temp_record in results_list:
             unique_nodeLabel_set.add(temp_record[1][0])
-        print(unique_nodeLabel_set)
+        #print(unique_nodeLabel_set)
         self.property_dict={element:list() for element in unique_nodeLabel_set}
         for temp_record in results_list:
             self.property_dict[temp_record[1][0]].append(temp_record[2])

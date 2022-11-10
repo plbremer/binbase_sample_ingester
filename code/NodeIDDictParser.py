@@ -38,11 +38,11 @@ class NodeIDDictParser:
                 continue
             elif isinstance(self.input_nx.nodes[temp_node][temp_attribute],str):
                 #print(total_ncbi_networkx.nodes[temp_node][temp_attribute])
-                one_node_id_dict[self.input_nx.nodes[temp_node][temp_attribute]]=temp_node
+                one_node_id_dict[self.input_nx.nodes[temp_node][temp_attribute]]=[temp_node]
             else:
                 #print(set(flatten(total_ncbi_networkx.nodes[temp_node][temp_attribute])))
                 temp_dict={
-                    element:temp_node for element in set(self.flatten(self.input_nx.nodes[temp_node][temp_attribute]))
+                    element:[temp_node] for element in set(self.flatten(self.input_nx.nodes[temp_node][temp_attribute]))
                 }
                 one_node_id_dict.update(temp_dict)
         return one_node_id_dict
@@ -54,9 +54,16 @@ class NodeIDDictParser:
         '''
         self.total_feature_node_id_dict=dict()
         for i,temp_node in enumerate(self.input_nx.nodes):
-            self.total_feature_node_id_dict.update(
-                self.create_one_values_to_node_id_dict(temp_node)
-            )
+            small_dict_to_add=self.create_one_values_to_node_id_dict(temp_node)
+            for temp_key in small_dict_to_add.keys():
+                try:
+                    self.total_feature_node_id_dict[temp_key]=self.total_feature_node_id_dict[temp_key]+small_dict_to_add[temp_key]
+                except KeyError:
+                    self.total_feature_node_id_dict[temp_key]=small_dict_to_add[temp_key]
+            # what we had before. this basically erased all but the last entry for any particular node, so like, "Liver Neoplasms" had only one entry
+            # self.total_feature_node_id_dict.update(
+            #     #self.create_one_values_to_node_id_dict(temp_node)
+            # )
 
 if __name__ == "__main__":
     my_NodeIDDictParser=NodeIDDictParser('../intermediate_results/nxs/ncbi_nx.bin',{'common_name','genbank_common_name','scientific_name'})

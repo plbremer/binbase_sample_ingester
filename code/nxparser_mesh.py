@@ -131,8 +131,8 @@ class NXParserMesh:
         #based on
         #https://stackoverflow.com/questions/65973902/which-elements-from-networkx-graph-might-become-labels-at-neo4j-graph
         for temp_node in self.mesh_nx.nodes:
-            self.mesh_nx.nodes[temp_node]['labels']=':MESH_NODE'
-            self.mesh_nx.nodes[temp_node]['mesh_id']=temp_node
+            self.mesh_nx.nodes[temp_node]['labels']=':MESH_NODE:ALL_NODE_LABEL'
+            #self.mesh_nx.nodes[temp_node]['mesh_id']=temp_node
         for temp_edge in self.mesh_nx.edges:
             self.mesh_nx.edges[temp_edge]['label']='PARENT_OF'
 

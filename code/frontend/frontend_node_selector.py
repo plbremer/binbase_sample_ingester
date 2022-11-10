@@ -65,10 +65,11 @@ def download_graph(
     #print(my_FrontendHelper.total_node_id_dict)
     temp_results=my_FrontendHelper.generate_nodes_from_freetext_string('Liver Neoplasms')
     #form of temp results:[('Liver Neoplasms', 'C06.552.697'), ('Ear Neoplasms', 'C09.647.312')]
-    for element in temp_results:
+    for freetext_match in temp_results:
+        for node in freetext_match[1]:
         #we accidentally overwrote mesh labels that appeared multiple times in our note_and_attribute_jsons
         #so this funciton needs to get reworked
-        print(my_FrontendHelper.get_node_labels_for_string(element[1]))
+            print(my_FrontendHelper.get_node_labels_for_string(node))
     print(temp_results)
     return [[1,2,3]]
 
