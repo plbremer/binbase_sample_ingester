@@ -68,21 +68,40 @@ def download_graph(
     #print(asdf)
     #print(input_nodesearch_value)
     #print(my_FrontendHelper.total_node_id_dict)
-    temp_results=my_FrontendHelper.generate_nodes_from_freetext_string(input_nodesearch_value)
+    string_node_id_list_pairs=my_FrontendHelper.generate_nodes_from_freetext_string(input_nodesearch_value)
     #form of temp results:[('Liver Neoplasms', ['C04.588.274.623', 'C06.301.623', 'C06.552.697']), ('Ear Neoplasms', ['C04.588.443.665.312', 'C09.218.334', 'C09.647.312']),
-    for freetext_match in temp_results:
+    graph_db_matching_records=list()
+    for freetext_match in string_node_id_list_pairs:
         for counter,node in enumerate(freetext_match[1]):
         #we accidentally overwrote mesh labels that appeared multiple times in our note_and_attribute_jsons
         #so this funciton needs to get reworked
+        
+        #maybe can improve speed with "where OR OR OR" eg 1 call?
+        #seems we might need a different index
             #for the moment, we are making the design decision that a text strin must automatically confer all nodes to which it belongs
             #eg, the user is not interested in obtaining all of the results for all of the node id for some "Iris Neoplasms"
             #so we only need the first    
             if counter>=1:
                 continue
-        print(my_FrontendHelper.get_node_labels_for_string(node,driver))
-    print(temp_results)
+        #print(my_FrontendHelper.get_node_labels_for_string(node,driver)[0])
+        #print(my_FrontendHelper.get_node_labels_for_string(node,driver))
+            print('*'*50)
+            graph_db_matching_records.append(my_FrontendHelper.get_node_labels_for_string(node,driver)[0])
+
+    
+    print(string_node_id_list_pairs)
     #driver.close()
-    return [[element[0] for element in temp_results]]
+    displayed_string_list=list()
+    for i in range(len(graph_db_matching_records)):
+        displayed_string_list.append(
+            my_FrontendHelper.construct_smart_node_selection_options(graph_db_matching_records[i],string_node_id_list_pairs[i])
+        )
+    
+    returned_options_dict=[
+        {'value':string_node_id_list_pairs[i][0], 'label':displayed_string_list[i]} for i in range(len(displayed_string_list))
+    ]
+    
+    return [returned_options_dict]
 
 if __name__ == "__main__":
     app.run(debug=True)#, host='0.0.0.0')

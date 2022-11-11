@@ -108,7 +108,7 @@ class FrontendHelper:
 
     def generate_nodes_from_freetext_string(self,freetext_string):
         my_test_strings_vector=self.tfidf_vectorizer.transform([freetext_string])
-        _,kn_ind=self.nea_nei_model.kneighbors(my_test_strings_vector,10)
+        _,kn_ind=self.nea_nei_model.kneighbors(my_test_strings_vector,3)
         total_results=list()
         print(kn_ind)
         for element in kn_ind[0]:
@@ -124,13 +124,50 @@ class FrontendHelper:
         #print(total_results)
         return total_results
 
+    def node_to_json(self,neo4j_node):
+        '''
+        Convert a neo4j node object into json/dict
+        :param neo4j_node:
+        :return: node in json/dict format
+        '''
 
-    def construct_smart_node_selection_options(self):
+        json_version = {}
+        for items in neo4j_node.items():
+            json_version[items[0]] = items[1]
+
+        return json_version
+
+    def construct_smart_node_selection_options(self,graph_db_record,string_node_id_pair):
         '''
         putting "humans" into the taxonomy thing did not work out well. it returns "human" and "humans" one is a species and one is a genus
         there needs to be more detail so that people chosoe the righ thing
         '''
-        pass
+        #print(graph_db_record.labels)
+        
+        
+        #print(graph_db_record)
+        this_nodes_properties=self.node_to_json(graph_db_record[0])
+        #print(type(graph_db_record))
+        #print(type(graph_db_record[0]))
+        #print(graph_db_record[0].items())
+        #print(graph_db_record.get('node'))
+        #print(self.node_to_json(graph_db_record[0]))
+        #print(graph_db_record.get('properties'))
+        #print(graph_db_record.labels)
+        print('-'*50)
+        if 'NCBI_NODE' in graph_db_record[0].labels:
+            #print('ncbi node')
+            #print(graph_db_record.get('properties'))
+            total_string=f'NCBI Node. Rank: {this_nodes_properties["rank"]}. Scientific Name: {this_nodes_properties["scientific_name"]}'
+            #print(total_string)
+        elif 'MESH_NODE' in graph_db_record[0].labels:
+            print('mesh node')
+            total_string=f'MeSH Node. Formal Name: {this_nodes_properties["mesh_label"]}'
+            print(total_string)
+        else:
+            print('other type of node')
+        return total_string
+        #pass
 
 
 if __name__=="__main__":
