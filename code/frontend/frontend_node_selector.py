@@ -43,7 +43,29 @@ app.layout = html.Div(
             options=['no node searched'],
             value='no node searched',
             multi=False,
-        )
+        ),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        dbc.Button(
+            'Create new node',
+            id='button_createnode',
+        ),
+        #choose nodetype
+        #choose
+        dcc.Dropdown(
+            id='dropdown_createnode_labeloptions',
+            options=['need api all for this'],
+            value='need api all for this',
+            multi=False,
+        ),   
+        dcc.Input(
+            id="input_createnode_labeloptions",
+            type='text',
+            placeholder='search for a node'
+        ),    
     ]
 )
 

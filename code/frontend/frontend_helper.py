@@ -108,7 +108,7 @@ class FrontendHelper:
 
     def generate_nodes_from_freetext_string(self,freetext_string):
         my_test_strings_vector=self.tfidf_vectorizer.transform([freetext_string])
-        _,kn_ind=self.nea_nei_model.kneighbors(my_test_strings_vector,3)
+        _,kn_ind=self.nea_nei_model.kneighbors(my_test_strings_vector,10)
         total_results=list()
         print(kn_ind)
         for element in kn_ind[0]:
@@ -158,11 +158,11 @@ class FrontendHelper:
         if 'NCBI_NODE' in graph_db_record[0].labels:
             #print('ncbi node')
             #print(graph_db_record.get('properties'))
-            total_string=f'NCBI Node. Rank: {this_nodes_properties["rank"]}. Scientific Name: {this_nodes_properties["scientific_name"]}'
+            total_string=f'{this_nodes_properties["scientific_name"]} - NCBI Node - Rank: {this_nodes_properties["rank"]}'
             #print(total_string)
         elif 'MESH_NODE' in graph_db_record[0].labels:
             print('mesh node')
-            total_string=f'MeSH Node. Formal Name: {this_nodes_properties["mesh_label"]}'
+            total_string=f'{this_nodes_properties["mesh_label"]} - MeSH Node'
             print(total_string)
         else:
             print('other type of node')
