@@ -1,7 +1,7 @@
 import string
 import dash
 from dash import dcc, html, dash_table, callback
-from dash.dependencies import Input, Output, State
+#from dash.dependencies import Input, Output, State
 #from dash.dependencies import State
 import dash_bootstrap_components as dbc
 import dash_cytoscape as cyto
@@ -9,18 +9,18 @@ from dash import callback_context
 from time import time
 from pprint import pprint
 import json
+import jsons
 from frontend_helper import *
 from selectednode import *
 
 from neo4j import GraphDatabase
 driver=GraphDatabase.driver('bolt://localhost:7687',auth=('neo4j','elaine123'))
 #
-#from dash_extensions.enrich import Output, DashProxy, Input, MultiplexerTransform
-app = dash.Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.BOOTSTRAP])#external_stylesheets=[dbc.themes.BOOTSTRAP])
-#app = DashProxy(__name__, use_pages=False, external_stylesheets=[dbc.themes.BOOTSTRAP],transforms=[MultiplexerTransform()])
+from dash_extensions.enrich import Output, DashProxy, Input, MultiplexerTransform, State
+#app = dash.Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.BOOTSTRAP])#external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = DashProxy(__name__, use_pages=False, external_stylesheets=[dbc.themes.BOOTSTRAP],transforms=[MultiplexerTransform()])
 
 
-asdf='hello'
 my_FrontendHelper=FrontendHelper()
 my_FrontendHelper.read_in_freetext_jsons('../../intermediate_results/attribute_node_id_pairs/')
 my_FrontendHelper.read_in_models()
@@ -99,7 +99,7 @@ app.layout = html.Div(
 )
 
 #this is the callback that searches for matching generic nodes that already exist in the database
-@callback(
+@app.callback(
     [
         Output(component_id='dropdown_nodesearch', component_property="options"),
         Output(component_id='my_store', component_property="data"),
@@ -113,13 +113,17 @@ app.layout = html.Div(
     ],
     prevent_initial_call=True
 )
-def download_graph(
+def find_best_node_matches(
     button_nodesearch_n_clicks,
     input_nodesearch_value,
     my_store_data
 ): 
     print('$'*50)
     print(my_store_data)
+    
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    
     #print(asdf)
     #print(input_nodesearch_value)
     #print(my_FrontendHelper.total_node_id_dict)
@@ -161,12 +165,12 @@ def download_graph(
     returned_options_dict=[
         {'value':string_node_id_list_pairs[i][0], 'label':displayed_string_list[i]} for i in range(len(displayed_string_list))
     ]
-    
-    return [returned_options_dict,my_store_data]
+    print(my_store_data)
+    return [returned_options_dict,jsons.dumps(my_store_data)]
 
 
 #this callback creates new "non-generic nodes" based on the generic node that the user chose
-@callback(
+@app.callback(
     [
         Output(component_id='my_store', component_property="data"),
     ],
@@ -188,7 +192,7 @@ def download_graph(
     ],
     prevent_initial_call=True
 )
-def download_graph(
+def add_generic_node_to_store(
     button_nodeselect_n_clicks,
     button_createnode_n_clicks,
     dropdown_nodesearch_value,
@@ -199,9 +203,15 @@ def download_graph(
 
     my_store_data
 ):
-
-    #if this is an already existing node
+    print('+'*50)
+    print('arrival store data')
     pprint(my_store_data)
+    print(type(my_store_data))
+
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    #if this is an already existing node
+
     if callback_context.triggered[0]['prop_id']=='button_nodeselect.n_clicks':
         my_SelectedNode=SelectedNode(dropdown_nodesearch_value,'existing_node',my_store_data['search_node_compressed_results'])
         my_store_data['generic_nodes'][dropdown_nodesearch_value]=my_SelectedNode
@@ -220,11 +230,11 @@ def download_graph(
         #!!!!
         ####
         my_SelectedNode.set_label(dropdown_createnode_labeloptions_value)
-        my_store_data['generic_nodes'][dropdown_createnode_labeloptions_value]=my_SelectedNode
-
+        my_store_data['generic_nodes'][dropdown_createnode_labeloptions_value]=my_SelectedNode#jsons.dumps(my_SelectedNode)
+    print(jsons.dumps(my_SelectedNode))
 
     pprint(my_store_data)
-    return [my_store_data]
+    return jsons.dumps(my_store_data)
 
 
 
