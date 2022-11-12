@@ -169,24 +169,16 @@ def find_best_node_matches(
     return [returned_options_dict,jsons.dumps(my_store_data)]
 
 
-#this callback creates new "non-generic nodes" based on the generic node that the user chose
+
 @app.callback(
     [
         Output(component_id='my_store', component_property="data"),
     ],
     [
         Input(component_id='button_nodeselect', component_property='n_clicks'),
-        Input(component_id='button_createnode', component_property='n_clicks')
     ],
     [
         State(component_id='dropdown_nodesearch', component_property="value"),
-
-        State(component_id='dropdown_createnode_labels', component_property="value"),
-        State(component_id='input_createnode_label', component_property="value"),
-        State(component_id='input_createnode_nodeid', component_property="value"),
-
-
-
         State(component_id='my_store', component_property="data"),
 
     ],
@@ -194,13 +186,7 @@ def find_best_node_matches(
 )
 def add_generic_node_to_store(
     button_nodeselect_n_clicks,
-    button_createnode_n_clicks,
     dropdown_nodesearch_value,
-
-    dropdown_createnode_labeloptions_value,
-    input_createnode_label_value,
-    input_createnode_nodeid_value,
-
     my_store_data
 ):
     print('+'*50)
@@ -212,25 +198,62 @@ def add_generic_node_to_store(
         my_store_data=jsons.loads(my_store_data)
     #if this is an already existing node
 
-    if callback_context.triggered[0]['prop_id']=='button_nodeselect.n_clicks':
-        my_SelectedNode=SelectedNode(dropdown_nodesearch_value,'existing_node',my_store_data['search_node_compressed_results'])
-        my_store_data['generic_nodes'][dropdown_nodesearch_value]=my_SelectedNode
+
+    my_SelectedNode=SelectedNode(dropdown_nodesearch_value,'existing_node',my_store_data['search_node_compressed_results'])
+    my_store_data['generic_nodes'][dropdown_nodesearch_value]=my_SelectedNode
     #if this is a new node
     
-    if callback_context.triggered[0]['prop_id']=='button_createnode.n_clicks':
-        my_SelectedNode=SelectedNode(
-            input_createnode_nodeid_value,
-            'created_node',
-            {input_createnode_nodeid_value:input_createnode_nodeid_value}
-        )
-        ####
-        #!!!!
-        #we need to create some kind of exception handling if they put values in both
-        #for now we only accept values from the dropdown
-        #!!!!
-        ####
-        my_SelectedNode.set_label(dropdown_createnode_labeloptions_value)
-        my_store_data['generic_nodes'][dropdown_createnode_labeloptions_value]=my_SelectedNode#jsons.dumps(my_SelectedNode)
+    print(jsons.dumps(my_SelectedNode))
+
+    pprint(my_store_data)
+    return jsons.dumps(my_store_data)
+
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_createnode', component_property='n_clicks')
+    ],
+    [
+        State(component_id='dropdown_createnode_labels', component_property="value"),
+        State(component_id='input_createnode_label', component_property="value"),
+        State(component_id='input_createnode_nodeid', component_property="value"),
+        State(component_id='my_store', component_property="data"),
+
+    ],
+    prevent_initial_call=True
+)
+def add_created_node_to_store(
+    button_createnode_n_clicks,
+    dropdown_createnode_labeloptions_value,
+    input_createnode_label_value,
+    input_createnode_nodeid_value,
+    my_store_data
+):
+    print('+'*50)
+    print('arrival store data')
+    pprint(my_store_data)
+    print(type(my_store_data))
+
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    #if this is an already existing node
+
+    my_SelectedNode=SelectedNode(
+        input_createnode_nodeid_value,
+        'created_node',
+        {input_createnode_nodeid_value:input_createnode_nodeid_value}
+    )
+    ####
+    #!!!!
+    #we need to create some kind of exception handling if they put values in both
+    #for now we only accept values from the dropdown
+    #!!!!
+    ####
+    my_SelectedNode.set_label(input_createnode_label_value)
+    my_store_data['generic_nodes'][dropdown_createnode_labeloptions_value]=my_SelectedNode#jsons.dumps(my_SelectedNode)
+
     print(jsons.dumps(my_SelectedNode))
 
     pprint(my_store_data)
