@@ -38,8 +38,16 @@ existing_node_labels=my_FrontendHelper.get_all_node_labels()
 existing_node_labels.remove('ALL_NODE_LABEL')
 existing_node_labels=list(existing_node_labels)
 
+existing_edge_labels=list(my_FrontendHelper.get_all_edge_labels())
+print('here')
 app.layout = html.Div(
     children=[
+        dcc.Store(
+            id='my_store',
+            storage_type='memory',
+            data={'generic_nodes':dict(),'edges':list()}
+        ),
+
         dbc.Card(
             children=[
                 html.H6('search for existing nodes'),
@@ -92,11 +100,7 @@ app.layout = html.Div(
                     'Create new node',
                     id='button_createnode',
                 ),
-                dcc.Store(
-                    id='my_store',
-                    storage_type='memory',
-                    data={'generic_nodes':dict()}
-                )
+
             ],
             style={"width": "18rem"}
         ),
@@ -119,55 +123,34 @@ app.layout = html.Div(
                     value='no node selected',
                     multi=False,
                 ),
-                # dbc.Button(
-                #     'add edge',
-                #     id='button_addedge',
-                # ),
-                # dcc.Dropdown(
-                #     id='dropdown_nodesearch',
-                #     options=['no node searched'],
-                #     value='no node searched',
-                #     multi=False,
-                # ),
-                # dbc.Button(
-                #     'Add this node',
-                #     id="button_nodeselect",
-                # ),
-                # html.Br(),
-                # html.Br(),
-                # html.Br(),
-                # html.Br(),
-                # html.Br(),
-                # html.H6('create new node'),
+                #there is a countable number of edges, so it doesnt feel natural to have an approach
+                #that is symmetric wth the nodes
+                html.H6('create new edge'),
 
-                # #choose nodetype
-                # #choose
-                # dcc.Dropdown(
-                #     id='dropdown_createnode_labels',
-                #     options=existing_node_labels,
-                #     placeholder='choose existing node label',
-                #     multi=False,
-                # ),   
-                # dcc.Input(
-                #     id="input_createnode_label",
-                #     type='text',
-                #     placeholder='or enter a new label type here'
-                # ),  
+
+                dcc.Dropdown(
+                    id='dropdown_createedge_labels',
+                    options=existing_edge_labels,
+                    placeholder='choose existing node label',
+                    multi=False,
+                ),   
+                dcc.Input(
+                    id="input_createedge_label",
+                    type='text',
+                    placeholder='or enter a new edge type here'
+                ),  
+                # "label" is all that describes an edge, so this is not necessary
                 # html.H6('also'),
                 # dcc.Input(
-                #     id="input_createnode_nodeid",
+                #     id="input_createedge_edgeid",
                 #     type='text',
-                #     placeholder='put node id here'
+                #     placeholder='put edge type here'
                 # ),  
-                # dbc.Button(
-                #     'Create new node',
-                #     id='button_createnode',
-                # ),
-                # dcc.Store(
-                #     id='my_store',
-                #     storage_type='memory',
-                #     data={'generic_nodes':dict()}
-                # )
+                dbc.Button(
+                    'Create new edge',
+                    id='button_createedge',
+                ),
+
             ],
             style={"width": "18rem"}
         ),   
@@ -400,12 +383,11 @@ def add_sample_node_to_store(
     # ],
     prevent_initial_call=True
 )
-def add_sample_node_to_store(
+def generate_dropdown_options_for_edge(
     my_store_data
 ):
     '''
-    create the options for the edge adds
-    could have received the edges as input, but should be fast without?
+    create a new edge
     '''
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
@@ -428,6 +410,54 @@ def add_sample_node_to_store(
         )
 
     return [output_options,output_options]
+
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_createedge', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='dropdown_createedge_labels', component_property="value"),
+        State(component_id='input_createedge_label', component_property="value"),
+        State(component_id='dropdown_nodefrom', component_property="value"),
+        State(component_id='dropdown_nodeto', component_property="value"),
+        State(component_id='my_store', component_property="data"),
+    ],
+    prevent_initial_call=True
+)
+def add_edge_to_store(
+    button_addedge_n_clicks,
+    dropdown_createedge_labels_value,
+    input_createedge_label_value,
+    dropdown_nodefrom_value,
+    dropdown_nodeto_value,
+    my_store_data
+):
+
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+
+    ####
+    #!!!!
+    #we need to create some kind of exception handling if they put values in both
+    #for now we only accept values from the dropdown
+    #!!!!
+    #need to disallow sample to sample edges
+    ####   
+    my_store_data['edges'].append(
+        {
+            'from':dropdown_nodefrom_value,
+            'to':dropdown_nodeto_value,
+            'type':dropdown_createedge_labels_value
+        }
+    )
+
+    pprint(my_store_data)
+
+
+    return jsons.dumps(my_store_data)
 
 
 

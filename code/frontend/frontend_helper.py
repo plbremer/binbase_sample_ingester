@@ -204,6 +204,38 @@ class FrontendHelper:
         #print(label_set)
         return label_set
 
+    def get_all_edge_labels(self):
+        '''
+        should be in api
+        '''
+        driver=GraphDatabase.driver('bolt://localhost:7687',auth=('neo4j','elaine123'))
+        query='''call db.relationshipTypes()'''
+        results_list=list()
+        with driver.session() as my_session:
+            my_results=my_session.run(query)
+        #print(dir(my_results))
+        #print(my_results._summary)
+            for element in my_results:
+                results_list.append(element)
+        driver.close()
+        pprint(results_list)
+        # property_dict={
+        #     element.nodeLabels[0]:
+        # }
+        
+        label_set=set()
+        for temp_record in results_list:
+            label_set.add(temp_record[0])
+        # #print(unique_nodeLabel_set)
+        # self.property_dict={element:list() for element in unique_nodeLabel_set}
+        # for temp_record in results_list:
+        #     self.property_dict[temp_record[1][0]].append(temp_record[2])
+        # pprint(self.property_dict)
+        print(label_set)
+        return label_set
+
+
+
 if __name__=="__main__":
     my_FrontendHelper=FrontendHelper()
     # my_FrontendHelper.read_in_freetext_jsons('../../intermediate_results/attribute_node_id_pairs/')
@@ -215,4 +247,5 @@ if __name__=="__main__":
     # for location in kn_ind[0]:
     #     print(my_FrontendHelper.tfidf_vectorizer_training_set[location])
     # my_FrontendHelper.get_node_property_matrix()
-    my_FrontendHelper.get_all_node_labels()
+    # my_FrontendHelper.get_all_node_labels()
+    my_FrontendHelper.get_all_edge_labels()
