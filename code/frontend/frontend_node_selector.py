@@ -40,61 +40,128 @@ existing_node_labels=list(existing_node_labels)
 
 app.layout = html.Div(
     children=[
-        html.H6('search for existing nodes'),
-        dcc.Input(
-            id="input_nodesearch",
-            type='text',
-            placeholder='search for a node'
-        ),
-        dbc.Button(
-            'Search available nodes',
-            id='button_nodesearch',
-        ),
-        dcc.Dropdown(
-            id='dropdown_nodesearch',
-            options=['no node searched'],
-            value='no node searched',
-            multi=False,
-        ),
-        dbc.Button(
-            'Add this node',
-            id="button_nodeselect",
-        ),
-        html.Br(),
-        html.Br(),
-        html.Br(),
-        html.Br(),
-        html.Br(),
-        html.H6('create new node'),
+        dbc.Card(
+            children=[
+                html.H6('search for existing nodes'),
+                dcc.Input(
+                    id="input_nodesearch",
+                    type='text',
+                    placeholder='search for a node'
+                ),
+                dbc.Button(
+                    'Search available nodes',
+                    id='button_nodesearch',
+                ),
+                dcc.Dropdown(
+                    id='dropdown_nodesearch',
+                    options=['no node searched'],
+                    value='no node searched',
+                    multi=False,
+                ),
+                dbc.Button(
+                    'Add this node',
+                    id="button_nodeselect",
+                ),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                html.H6('create new node'),
 
-        #choose nodetype
-        #choose
-        dcc.Dropdown(
-            id='dropdown_createnode_labels',
-            options=existing_node_labels,
-            placeholder='choose existing node label',
-            multi=False,
-        ),   
-        dcc.Input(
-            id="input_createnode_label",
-            type='text',
-            placeholder='or enter a new label type here'
-        ),  
-        html.H6('also'),
-        dcc.Input(
-            id="input_createnode_nodeid",
-            type='text',
-            placeholder='put node id here'
-        ),  
-        dbc.Button(
-            'Create new node',
-            id='button_createnode',
+                #choose nodetype
+                #choose
+                dcc.Dropdown(
+                    id='dropdown_createnode_labels',
+                    options=existing_node_labels,
+                    placeholder='choose existing node label',
+                    multi=False,
+                ),   
+                dcc.Input(
+                    id="input_createnode_label",
+                    type='text',
+                    placeholder='or enter a new label type here'
+                ),  
+                html.H6('also'),
+                dcc.Input(
+                    id="input_createnode_nodeid",
+                    type='text',
+                    placeholder='put node id here'
+                ),  
+                dbc.Button(
+                    'Create new node',
+                    id='button_createnode',
+                ),
+                dcc.Store(
+                    id='my_store',
+                    storage_type='memory',
+                    data={'generic_nodes':dict()}
+                )
+            ],
+            style={"width": "18rem"}
         ),
-        dcc.Store(
-            id='my_store',
-            storage_type='memory',
-            data={'generic_nodes':dict()}
-        )
+        html.Br(),
+        html.Br(),
+        dbc.Card(
+            children=[
+                html.H6('add samples'),
+                dcc.Input(
+                    id="input_samplenumber",
+                    type='number',
+                    placeholder='add this many samples'
+                ),
+                dbc.Button(
+                    'Search available nodes',
+                    id='button_addsamples',
+                ),
+                # dcc.Dropdown(
+                #     id='dropdown_nodesearch',
+                #     options=['no node searched'],
+                #     value='no node searched',
+                #     multi=False,
+                # ),
+                # dbc.Button(
+                #     'Add this node',
+                #     id="button_nodeselect",
+                # ),
+                # html.Br(),
+                # html.Br(),
+                # html.Br(),
+                # html.Br(),
+                # html.Br(),
+                # html.H6('create new node'),
+
+                # #choose nodetype
+                # #choose
+                # dcc.Dropdown(
+                #     id='dropdown_createnode_labels',
+                #     options=existing_node_labels,
+                #     placeholder='choose existing node label',
+                #     multi=False,
+                # ),   
+                # dcc.Input(
+                #     id="input_createnode_label",
+                #     type='text',
+                #     placeholder='or enter a new label type here'
+                # ),  
+                # html.H6('also'),
+                # dcc.Input(
+                #     id="input_createnode_nodeid",
+                #     type='text',
+                #     placeholder='put node id here'
+                # ),  
+                # dbc.Button(
+                #     'Create new node',
+                #     id='button_createnode',
+                # ),
+                # dcc.Store(
+                #     id='my_store',
+                #     storage_type='memory',
+                #     data={'generic_nodes':dict()}
+                # )
+            ],
+            style={"width": "18rem"}
+        ),       
     ]
 )
 
@@ -251,15 +318,45 @@ def add_created_node_to_store(
     #for now we only accept values from the dropdown
     #!!!!
     ####
-    my_SelectedNode.set_label(input_createnode_label_value)
-    my_store_data['generic_nodes'][dropdown_createnode_labeloptions_value]=my_SelectedNode#jsons.dumps(my_SelectedNode)
+    my_SelectedNode.set_label(dropdown_createnode_labeloptions_value)
+    my_store_data['generic_nodes'][input_createnode_nodeid_value]=my_SelectedNode#jsons.dumps(my_SelectedNode)
 
+
+    print('#'*50)
     print(jsons.dumps(my_SelectedNode))
 
     pprint(my_store_data)
     return jsons.dumps(my_store_data)
 
 
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_addsamples', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='input_samplenumber', component_property="value"),
+        State(component_id='my_store', component_property="data"),
+    ],
+    prevent_initial_call=True
+)
+def add_sample_node_to_store(
+    button_addsamples_n_clicks,
+    input_samplenumber_value,
+    my_store_data
+):
+
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+
+    #should have assertion statement that number is integer
+    my_store_data['sample_nodes']=list()
+    for i in range(input_samplenumber_value):
+        my_store_data['sample_nodes'].append(str(i))
+
+    return jsons.dumps(my_store_data)
 
 if __name__ == "__main__":
     app.run(debug=True)#, host='0.0.0.0')
