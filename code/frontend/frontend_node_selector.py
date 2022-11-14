@@ -42,12 +42,68 @@ existing_edge_labels=list(my_FrontendHelper.get_all_edge_labels())
 print('here')
 app.layout = html.Div(
     children=[
+        
         dcc.Store(
             id='my_store',
             storage_type='memory',
-            data={'generic_nodes':dict(),'edges':list()}
+            #sample nodes should probably be a set
+            data={'generic_nodes':dict(),'edges':list(),'sample_nodes':list()}
         ),
-
+        dbc.Card(
+            children=[
+                cyto.Cytoscape(
+                    id='cyto',
+                    #layout={'name':'dagre'},
+                    elements=[],#compound_network_dict['elements'],
+                    stylesheet=[
+                        {
+                            'selector':'node',
+                            'style':{
+                                'content':'data(label)',
+                                'text-wrap':'wrap',
+                                'text-max-width':100,
+                                'font-size':13
+                            }
+                            
+                        },
+                        {
+                            'selector':'edge[label]',
+                            'style':{
+                                'label':'data(label)',
+                                #'text-wrap':'wrap',
+                                #'text-max-width':100,
+                                #'font-size':13
+                            } 
+                        },
+                        {
+                            'selector':'edge',
+                            'style':{
+                                'curve-style': 'bezier',
+                                'source-arrow-shape': 'triangle',
+                                #'text-wrap':'wrap',
+                                #'text-max-width':100,
+                                #'font-size':13
+                            } 
+                        },
+                        {
+                            "selector": ".autorotate",
+                            "style": {
+                                "edge-text-rotation": "autorotate",
+                            }
+                        }
+                    #     {
+                    #         'selector':'.selected',
+                    #         'style':{
+                    #             'background-color':'red'
+                    #         }
+                    #     },
+                    #     #'text-wrap':'wrap'
+                    ],
+                    minZoom=0.3,
+                    maxZoom=5
+                ),
+            ]
+        ),
         dbc.Card(
             children=[
                 html.H6('search for existing nodes'),
@@ -362,7 +418,7 @@ def add_sample_node_to_store(
         my_store_data=jsons.loads(my_store_data)
 
     #should have assertion statement that number is integer
-    my_store_data['sample_nodes']=list()
+    #my_store_data['sample_nodes']=list()
     for i in range(input_samplenumber_value):
         my_store_data['sample_nodes'].append(str(i))
 
@@ -460,6 +516,60 @@ def add_edge_to_store(
     return jsons.dumps(my_store_data)
 
 
+@app.callback(
+    [
+        Output(component_id='cyto', component_property="elements"),
+    ],
+    [
+        Input(component_id='my_store', component_property="data"),
+    ],
+)
+def generate_cyto(my_store_data):
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+
+    print(my_store_data)
+    cyto_elements=list()
+
+    #if there is at least one generic node
+    #unwrap the nodes
+    if len(my_store_data['generic_nodes'].keys())>0:
+        for node_id in my_store_data['generic_nodes']:
+            cyto_elements.append(
+                {
+                    'data':{
+                        'id':node_id,'label':node_id
+                    }
+                }
+            )
+
+    #if there is at least one sample node
+    #visualize them as one large conglomerate
+    if len(my_store_data['sample_nodes'])>0:
+        cyto_elements.append(
+            {
+                'data':{
+                    'id':'Samples','label':'Represents all samples'
+                }
+            }
+        )
+
+    #if there is at least one edge
+    #unwrap the edges
+    if len(my_store_data['edges'])>0:
+        for edge in my_store_data['edges']:
+            cyto_elements.append(
+                {
+                    'data':{
+                        'source':edge['from'],
+                        'target':edge['to'],
+                        'label':edge['type'],
+                        'id':time()
+                    }
+                }
+            )        
+
+    return cyto_elements
 
 
 if __name__ == "__main__":
