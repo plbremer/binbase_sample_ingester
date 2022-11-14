@@ -100,20 +100,29 @@ app.layout = html.Div(
             ],
             style={"width": "18rem"}
         ),
+
+        
         html.Br(),
         html.Br(),
         dbc.Card(
             children=[
-                html.H6('add samples'),
-                dcc.Input(
-                    id="input_samplenumber",
-                    type='number',
-                    placeholder='add this many samples'
+                html.H6('add edge'),
+                dcc.Dropdown(
+                    id='dropdown_nodefrom',
+                    options=['no node selected'],
+                    value='no node selected',
+                    multi=False,
                 ),
-                dbc.Button(
-                    'Search available nodes',
-                    id='button_addsamples',
+                dcc.Dropdown(
+                    id='dropdown_nodeto',
+                    options=['no node selected'],
+                    value='no node selected',
+                    multi=False,
                 ),
+                # dbc.Button(
+                #     'add edge',
+                #     id='button_addedge',
+                # ),
                 # dcc.Dropdown(
                 #     id='dropdown_nodesearch',
                 #     options=['no node searched'],
@@ -161,7 +170,25 @@ app.layout = html.Div(
                 # )
             ],
             style={"width": "18rem"}
-        ),       
+        ),   
+        html.Br(),
+        html.Br(),
+        dbc.Card(
+            children=[
+                html.H6('add samples'),
+                dcc.Input(
+                    id="input_samplenumber",
+                    type='number',
+                    placeholder='add this many samples'
+                ),
+                dbc.Button(
+                    'Search available nodes',
+                    id='button_addsamples',
+                ),
+
+            ],
+            style={"width": "18rem"}
+        ),   
     ]
 )
 
@@ -357,6 +384,53 @@ def add_sample_node_to_store(
         my_store_data['sample_nodes'].append(str(i))
 
     return jsons.dumps(my_store_data)
+
+
+@app.callback(
+    [
+        Output(component_id='dropdown_nodefrom', component_property="options"),
+        Output(component_id='dropdown_nodeto', component_property="options"),
+    ],
+    [
+        Input(component_id='my_store', component_property="data"),
+    ],
+    # [
+    #     State(component_id='input_samplenumber', component_property="value"),
+    #     State(component_id='my_store', component_property="data"),
+    # ],
+    prevent_initial_call=True
+)
+def add_sample_node_to_store(
+    my_store_data
+):
+    '''
+    create the options for the edge adds
+    could have received the edges as input, but should be fast without?
+    '''
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+
+    output_options=list()
+    if 'generic_nodes' in my_store_data.keys():
+        for temp_node in my_store_data['generic_nodes']:
+            output_options.append(
+                {'value':temp_node,'label':temp_node}
+            )
+    if 'sample_nodes' in my_store_data.keys():
+        output_options.append(
+            {'value': 'Samples', 'label': 'Samples'}
+        )
+
+    #if we found none, then the length is zero
+    if len(output_options)==0:
+        output_options.append(
+            {'value': 'no node selected', 'label': 'no node selected'}
+        )
+
+    return [output_options,output_options]
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)#, host='0.0.0.0')
