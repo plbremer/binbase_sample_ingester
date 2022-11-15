@@ -49,7 +49,7 @@ app.layout = html.Div(
                     children=[
                         dbc.Row(
                             children=[
-                                dbc.Row(html.H6('add samples')),
+                                dbc.Row(html.H6('add sample nodes')),
                                 dbc.Row(
                                     children=[
                                         dbc.Col(
@@ -66,7 +66,7 @@ app.layout = html.Div(
                                 ),
                                 dbc.Row(
                                     dbc.Button(
-                                        'Search available nodes',
+                                        'add samples',
                                         id='button_addsamples',
                                     ),
                                 )
@@ -82,102 +82,154 @@ app.layout = html.Div(
                         html.Br(),
                         dbc.Row(
                             children=[
-                                dbc.Card(
+                                dbc.Row(html.H6('add property nodes')),
+                                dbc.Row(
                                     children=[
-                                        html.H6('search for existing nodes'),
-                                        dcc.Input(
-                                            id="input_nodesearch",
-                                            type='text',
-                                            placeholder='search for a node'
+                                        dbc.Col(
+                                            children=[
+                                                dbc.Row(html.H6('existing nodes')),
+                                                dbc.Row(
+                                                    children=[
+                                                        dbc.Col(
+                                                            dcc.Input(
+                                                                id="input_nodesearch",
+                                                                type='text',
+                                                                placeholder='search for a node'
+                                                            ),
+                                                        ),
+                                                        dbc.Col(
+                                                            dbc.Button(
+                                                                'Search available nodes',
+                                                                id='button_nodesearch',
+                                                            ),
+                                                        )
+                                                    ]
+                                                ),
+                                                dbc.Row(
+                                                    dcc.Dropdown(
+                                                        id='dropdown_nodesearch',
+                                                        options=['no node searched'],
+                                                        value='no node searched',
+                                                        multi=False,
+                                                    ),
+                                                ),
+                                                dbc.Row(
+                                                    dbc.Button(
+                                                        'Add this node',
+                                                        id="button_nodeselect",
+                                                    ),
+                                                )
+                                            ]
                                         ),
-                                        dbc.Button(
-                                            'Search available nodes',
-                                            id='button_nodesearch',
-                                        ),
-                                        dcc.Dropdown(
-                                            id='dropdown_nodesearch',
-                                            options=['no node searched'],
-                                            value='no node searched',
-                                            multi=False,
-                                        ),
-                                        dbc.Button(
-                                            'Add this node',
-                                            id="button_nodeselect",
-                                        ),
-                                        html.Br(),
-                                        html.H6('create new node'),
-                                        dcc.Dropdown(
-                                            id='dropdown_createnode_labels',
-                                            options=existing_node_labels,
-                                            placeholder='choose existing node label',
-                                            multi=False,
-                                        ),   
-                                        dcc.Input(
-                                            id="input_createnode_label",
-                                            type='text',
-                                            placeholder='or enter a new label type here'
-                                        ),  
-                                        html.H6('also'),
-                                        dcc.Input(
-                                            id="input_createnode_nodeid",
-                                            type='text',
-                                            placeholder='put node id here'
-                                        ),  
-                                        dbc.Button(
-                                            'Create new node',
-                                            id='button_createnode',
-                                        ),
-
-                                    ],
-                                    style={"width": "18rem"}
-                                ),
+                                        dbc.Col(width={'size':2}),
+                                        dbc.Col(
+                                            children=[
+                                                dbc.Row(html.H6('new nodes')),
+                                                dbc.Row(
+                                                    children=[
+                                                        dbc.Col(
+                                                            dcc.Dropdown(
+                                                                id='dropdown_createnode_labels',
+                                                                options=existing_node_labels,
+                                                                placeholder='choose existing node label',
+                                                                multi=False,
+                                                            ), 
+                                                            width={'size':6}
+                                                        ),
+                                                        dbc.Col(
+                                                            html.H6(' or '),
+                                                            width={'size':3}
+                                                            ),
+                                                        dbc.Col(
+                                                            dcc.Input(
+                                                                id="input_createnode_label",
+                                                                type='text',
+                                                                placeholder='enter a new label type'
+                                                            ),  
+                                                            width={'size':3}
+                                                        )
+                                                    ]
+                                                ),
+                                                dbc.Row(
+                                                    dcc.Input(
+                                                        id="input_createnode_nodeid",
+                                                        type='text',
+                                                        placeholder='put node id here'
+                                                    ),  
+                                                ),
+                                                dbc.Row(
+                                                    dbc.Button(
+                                                        'Create new node',
+                                                        id='button_createnode',
+                                                    ),
+                                                )
+                                            ]
+                                        )
+                                    ]
+                                )
                             ]
                         ),
                         html.Br(),
                         html.Br(),
                         dbc.Row(
                             children=[
-                                dbc.Card(
+                                dbc.Row(html.H6('add edge')),
+                                dbc.Row(
                                     children=[
-                                        html.H6('add edge'),
-                                        dcc.Dropdown(
-                                            id='dropdown_nodefrom',
-                                            options=['no node selected'],
-                                            value='no node selected',
-                                            multi=False,
+                                        dbc.Col(
+                                            children=[
+                                                html.H6('from node'),
+                                                dcc.Dropdown(
+                                                    id='dropdown_nodefrom',
+                                                    options=['no node selected'],
+                                                    value='no node selected',
+                                                    multi=False,
+                                                ),
+                                            ]
                                         ),
-                                        dcc.Dropdown(
-                                            id='dropdown_nodeto',
-                                            options=['no node selected'],
-                                            value='no node selected',
-                                            multi=False,
+                                        dbc.Col(
+                                            children=[
+                                                html.H6('to node'),
+                                                dcc.Dropdown(
+                                                    id='dropdown_nodeto',
+                                                    options=['no node selected'],
+                                                    value='no node selected',
+                                                    multi=False,
+                                                ),
+                                            ]
+                                        )
+                                    ]
+                                ),
+                                dbc.Row(
+                                    children=[
+                                        dbc.Col(
+                                            dcc.Dropdown(
+                                                id='dropdown_createedge_labels',
+                                                options=existing_edge_labels,
+                                                placeholder='choose existing node label',
+                                                multi=False,
+                                            ),   
                                         ),
-                                        #there is a countable number of edges, so it doesnt feel natural to have an approach
-                                        #that is symmetric wth the nodes
-                                        html.H6('create new edge'),
-                                        dcc.Dropdown(
-                                            id='dropdown_createedge_labels',
-                                            options=existing_edge_labels,
-                                            placeholder='choose existing node label',
-                                            multi=False,
-                                        ),   
-                                        dcc.Input(
-                                            id="input_createedge_label",
-                                            type='text',
-                                            placeholder='or enter a new edge type here'
-                                        ),  
-                                        dbc.Button(
-                                            'Create new edge',
-                                            id='button_createedge',
+                                        dbc.Col(html.H6(' or ')),
+                                        dbc.Col(
+                                            dcc.Input(
+                                                id="input_createedge_label",
+                                                type='text',
+                                                placeholder='or enter a new edge type here'
+                                            ),  
                                         ),
-
-                                    ],
-                                    style={"width": "18rem"}
-                                ), 
+                                    ]
+                                ),
+                                dbc.Row(
+                                    dbc.Button(
+                                        'Create new edge',
+                                        id='button_createedge',
+                                    ),
+                                )
                             ]
                         ),
                     ],
-                    width={'size':4}
+                    width={'size':5}
                 ),
                 dbc.Col(
                     width={'size':2}
