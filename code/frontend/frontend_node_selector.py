@@ -589,6 +589,7 @@ def add_edge_to_store(
     [
         Input(component_id='my_store', component_property="data"),
     ],
+    prevent_initial_call=True
 )
 def generate_cyto(my_store_data):
     if type(my_store_data)!=dict:
@@ -650,13 +651,18 @@ def generate_cyto(my_store_data):
     [
         State(component_id='my_store', component_property="data"),    
     ],
+    prevent_initial_call=True
 )
 def prepare_property_section(cyto_tapNodeData,my_store_data):
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
     #i think the best way to know if it is a node or an edge is to check the callback context?
     #or have two callbacks
     print(cyto_tapNodeData)
-    print(my_store_data)
-    if len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])>0:
+    pprint(my_store_data)
+    print(my_store_data['generic_nodes'][cyto_tapNodeData['id']])
+    print(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])
+    if len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys())>0:
         #do something
         #pass
         properties=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()
@@ -668,23 +674,50 @@ def prepare_property_section(cyto_tapNodeData,my_store_data):
     data = temp_panda.to_dict(orient='records')
 
 
-# @app.callback(
-#     [
-#         Output(component_id='table_properties', component_property='data'),
-#     ],
-#     [
-#         Input(component_id='button_addproperty', component_property="n_clicks"),
-#     ],
-#     [
-#         State(component_id='dropdown_addproperty_keys', component_property="value"),
-#         State(component_id='input_addproperty_key', component_property="value"),
-#         State(component_id='input_addproperty_value', component_property="value"),
-#         State(component_id='table_properties', component_property='data')
-#     ],
-# )
-# def add_property():
-#     pass
+    #how do we get the label that this particular node is?
+    #we cant. or at least we shouldnt? because nodes can have multiple labels
+    #so it a big headache. for the moment, we use the all labels option
+    my_FrontendHelper.get_node_property_matrix()
+    all_labels=my_FrontendHelper.property_dict['ALL_NODE_LABEL']
 
+    return [all_labels,data]
+    
+
+@app.callback(
+    [
+        Output(component_id='table_properties', component_property='data'),
+    ],
+    [
+        Input(component_id='button_addproperty', component_property="n_clicks"),
+    ],
+    [
+        State(component_id='dropdown_addproperty_keys', component_property="value"),
+        State(component_id='input_addproperty_key', component_property="value"),
+        State(component_id='input_addproperty_value', component_property="value"),
+        State(component_id='table_properties', component_property='data')
+    ],
+)
+def add_property(
+    button_addproperty_n_clicks,
+    dropdown_addproperty_keys_value,
+    input_addproperty_key_value,
+    input_addproperty_value_value,
+    table_properties_data
+):
+    #pass
+    # if type(my_store_data)!=dict:
+    #     my_store_data=jsons.loads(my_store_data)
+    ####
+    #!!!!
+    #we need to create some kind of exception handling if they put values in both
+    #for now we only accept values from the dropdown
+    #!!!!
+    ####
+    #total_panda = pd.read_json(response.json(), orient="records")
+    #    properties=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()
+    #    values=[my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'][temp_key] for temp_key in my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()]
+
+    print()
 
 # @app.callback(
 #     [
@@ -699,6 +732,8 @@ def prepare_property_section(cyto_tapNodeData,my_store_data):
 # )
 # def store_properties():
 #     pass
+#     if type(my_store_data)!=dict:
+#         my_store_data=jsons.loads(my_store_data)
 
 if __name__ == "__main__":
     app.run(debug=True)#, host='0.0.0.0')

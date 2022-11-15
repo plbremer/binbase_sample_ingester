@@ -66,11 +66,16 @@ class FrontendHelper:
         
         unique_nodeLabel_set=set()
         for temp_record in results_list:
-            unique_nodeLabel_set.add(temp_record[1][0])
+            for temp_nodelabel in temp_record[1]:
+                unique_nodeLabel_set.add(temp_nodelabel)
+        print(unique_nodeLabel_set)
         #print(unique_nodeLabel_set)
         self.property_dict={element:list() for element in unique_nodeLabel_set}
         for temp_record in results_list:
-            self.property_dict[temp_record[1][0]].append(temp_record[2])
+            for temp_nodelabel in temp_record[1]:
+                #for temp_property in temp_record[2]:
+                    #print(temp_nodelabel)
+                self.property_dict[temp_nodelabel].append(temp_record[2])
         pprint(self.property_dict)
 
     def get_node_labels_for_string(self,temp_string,temp_driver):
