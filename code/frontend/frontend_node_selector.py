@@ -12,6 +12,7 @@ import json
 import jsons
 from frontend_helper import *
 from selectednode import *
+import pandas as pd
 
 from neo4j import GraphDatabase
 driver=GraphDatabase.driver('bolt://localhost:7687',auth=('neo4j','elaine123'))
@@ -224,7 +225,72 @@ app.layout = html.Div(
                     'Search available nodes',
                     id='button_addsamples',
                 ),
+            ],
+            style={"width": "18rem"}
+        ),   
+        html.Br(),
+        html.Br(),
+        dbc.Card(
+            children=[
+                html.H6('Node/edge property adjuster'),
+                dcc.Dropdown(
+                    id='dropdown_addproperty_keys',
+                    options=[],
+                    placeholder='choose existing propertykey',
+                    multi=False,
+                ),  
+                dcc.Input(
+                    id="input_addproperty_key",
+                    type='number',
+                    placeholder='add new property key'
+                ),
+                dcc.Input(
+                    id="input_addproperty_value",
+                    type='number',
+                    placeholder='type property value'
+                ),
+                dbc.Button(
+                    'Add this property key/value',
+                    id='button_addproperty',
+                ),
 
+
+                dash_table.DataTable(
+                    id='table_properties',
+                    columns=[
+                        {'name': 'Property', 'id': 'property'},
+                        {'name': 'Value', 'id': 'value'}, 
+                        #{'name': 'Sample Count', 'id': 'sample_count'}
+                    ],
+                    data=[],
+                    page_current=0,
+                    page_size=10,
+                    #page_action='custom',
+                    page_action='native',
+                    #sort_action='custom',
+                    sort_action='native',
+                    sort_mode='multi',
+                    #sort_by=[],
+                    #filter_action='custom',
+                    filter_action='native',
+                    row_deletable=False,
+                    #filter_query='',
+                    style_header={
+                        'backgroundColor': 'rgb(30, 30, 30)',
+                        'color': 'white'
+                    },
+                    style_data={
+                        'backgroundColor': 'rgb(50, 50, 50)',
+                        'color': 'white'
+                    },
+                    style_cell={
+                        'font-family':'sans-serif'
+                    }
+                ),
+                dbc.Button(
+                    'Add this property key/value',
+                    id='button_saveproperties',
+                ),
             ],
             style={"width": "18rem"}
         ),   
@@ -571,6 +637,68 @@ def generate_cyto(my_store_data):
 
     return cyto_elements
 
+
+@app.callback(
+    [
+        Output(component_id='dropdown_addproperty_keys', component_property='options'),
+        #Output(component_id='input_addproperty_key', component_property='value')),
+        Output(component_id='table_properties', component_property='data'),
+    ],
+    [
+        Input(component_id='cyto', component_property='tapNodeData'),
+    ],
+    [
+        State(component_id='my_store', component_property="data"),    
+    ],
+)
+def prepare_property_section(cyto_tapNodeData,my_store_data):
+    #i think the best way to know if it is a node or an edge is to check the callback context?
+    #or have two callbacks
+    print(cyto_tapNodeData)
+    print(my_store_data)
+    if len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])>0:
+        #do something
+        #pass
+        properties=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()
+        values=[my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'][temp_key] for temp_key in my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()]
+    elif len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])==0:
+        properties=[]
+        values=[]
+    temp_panda=pd.DataFrame.from_dict({'property':properties,'value':values})
+    data = temp_panda.to_dict(orient='records')
+
+
+# @app.callback(
+#     [
+#         Output(component_id='table_properties', component_property='data'),
+#     ],
+#     [
+#         Input(component_id='button_addproperty', component_property="n_clicks"),
+#     ],
+#     [
+#         State(component_id='dropdown_addproperty_keys', component_property="value"),
+#         State(component_id='input_addproperty_key', component_property="value"),
+#         State(component_id='input_addproperty_value', component_property="value"),
+#         State(component_id='table_properties', component_property='data')
+#     ],
+# )
+# def add_property():
+#     pass
+
+
+# @app.callback(
+#     [
+#         Output(component_id='my_store', component_property="data"),
+#     ],
+#     [
+#         Input(component_id='button_saveproperties', component_property='n_clicks'),
+#     ],
+#     [
+#         State(component_id='table_properties', component_property='data'),    
+#     ],
+# )
+# def store_properties():
+#     pass
 
 if __name__ == "__main__":
     app.run(debug=True)#, host='0.0.0.0')

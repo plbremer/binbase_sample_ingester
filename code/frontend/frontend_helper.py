@@ -246,6 +246,6 @@ if __name__=="__main__":
     # kn_dist,kn_ind=my_FrontendHelper.nea_nei_model.kneighbors(my_test_strings_vector,100)
     # for location in kn_ind[0]:
     #     print(my_FrontendHelper.tfidf_vectorizer_training_set[location])
-    # my_FrontendHelper.get_node_property_matrix()
+    my_FrontendHelper.get_node_property_matrix()
     # my_FrontendHelper.get_all_node_labels()
-    my_FrontendHelper.get_all_edge_labels()
+    # my_FrontendHelper.get_all_edge_labels()
