@@ -92,13 +92,6 @@ app.layout = html.Div(
                                 "edge-text-rotation": "autorotate",
                             }
                         }
-                    #     {
-                    #         'selector':'.selected',
-                    #         'style':{
-                    #             'background-color':'red'
-                    #         }
-                    #     },
-                    #     #'text-wrap':'wrap'
                     ],
                     minZoom=0.3,
                     maxZoom=5
@@ -133,9 +126,6 @@ app.layout = html.Div(
                 html.Br(),
                 html.Br(),
                 html.H6('create new node'),
-
-                #choose nodetype
-                #choose
                 dcc.Dropdown(
                     id='dropdown_createnode_labels',
                     options=existing_node_labels,
@@ -161,8 +151,6 @@ app.layout = html.Div(
             ],
             style={"width": "18rem"}
         ),
-
-        
         html.Br(),
         html.Br(),
         dbc.Card(
@@ -183,8 +171,6 @@ app.layout = html.Div(
                 #there is a countable number of edges, so it doesnt feel natural to have an approach
                 #that is symmetric wth the nodes
                 html.H6('create new edge'),
-
-
                 dcc.Dropdown(
                     id='dropdown_createedge_labels',
                     options=existing_edge_labels,
@@ -196,13 +182,6 @@ app.layout = html.Div(
                     type='text',
                     placeholder='or enter a new edge type here'
                 ),  
-                # "label" is all that describes an edge, so this is not necessary
-                # html.H6('also'),
-                # dcc.Input(
-                #     id="input_createedge_edgeid",
-                #     type='text',
-                #     placeholder='put edge type here'
-                # ),  
                 dbc.Button(
                     'Create new edge',
                     id='button_createedge',
@@ -253,8 +232,6 @@ app.layout = html.Div(
                     'Add this property key/value',
                     id='button_addproperty',
                 ),
-
-
                 dash_table.DataTable(
                     id='table_properties',
                     columns=[
@@ -317,15 +294,12 @@ def find_best_node_matches(
     input_nodesearch_value,
     my_store_data
 ): 
-    print('$'*50)
-    print(my_store_data)
+    '''
+    '''
     
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
-    
-    #print(asdf)
-    #print(input_nodesearch_value)
-    #print(my_FrontendHelper.total_node_id_dict)
+
     string_node_id_list_pairs=my_FrontendHelper.generate_nodes_from_freetext_string(input_nodesearch_value)
     #form of temp results:[('Liver Neoplasms', ['C04.588.274.623', 'C06.301.623', 'C06.552.697']), ('Ear Neoplasms', ['C04.588.443.665.312', 'C09.218.334', 'C09.647.312']),
     graph_db_matching_records=list()
@@ -341,9 +315,6 @@ def find_best_node_matches(
             #so we only need the first    
             if counter>=1:
                 continue
-        #print(my_FrontendHelper.get_node_labels_for_string(node,driver)[0])
-        #print(my_FrontendHelper.get_node_labels_for_string(node,driver))
-            print('*'*50)
             graph_db_matching_records.append(my_FrontendHelper.get_node_labels_for_string(node,driver)[0])
 
     
@@ -388,10 +359,8 @@ def add_generic_node_to_store(
     dropdown_nodesearch_value,
     my_store_data
 ):
-    print('+'*50)
-    print('arrival store data')
-    pprint(my_store_data)
-    print(type(my_store_data))
+    '''
+    '''
 
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
@@ -401,10 +370,7 @@ def add_generic_node_to_store(
     my_SelectedNode=SelectedNode(dropdown_nodesearch_value,'existing_node',my_store_data['search_node_compressed_results'])
     my_store_data['generic_nodes'][dropdown_nodesearch_value]=my_SelectedNode
     #if this is a new node
-    
-    print(jsons.dumps(my_SelectedNode))
 
-    pprint(my_store_data)
     return jsons.dumps(my_store_data)
 
 @app.callback(
@@ -430,11 +396,9 @@ def add_created_node_to_store(
     input_createnode_nodeid_value,
     my_store_data
 ):
-    print('+'*50)
-    print('arrival store data')
-    pprint(my_store_data)
-    print(type(my_store_data))
-
+    '''
+    '''
+    
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
     #if this is an already existing node
@@ -453,11 +417,6 @@ def add_created_node_to_store(
     my_SelectedNode.set_label(dropdown_createnode_labeloptions_value)
     my_store_data['generic_nodes'][input_createnode_nodeid_value]=my_SelectedNode#jsons.dumps(my_SelectedNode)
 
-
-    print('#'*50)
-    print(jsons.dumps(my_SelectedNode))
-
-    pprint(my_store_data)
     return jsons.dumps(my_store_data)
 
 
@@ -479,7 +438,8 @@ def add_sample_node_to_store(
     input_samplenumber_value,
     my_store_data
 ):
-
+    '''
+    '''
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
 
@@ -499,10 +459,6 @@ def add_sample_node_to_store(
     [
         Input(component_id='my_store', component_property="data"),
     ],
-    # [
-    #     State(component_id='input_samplenumber', component_property="value"),
-    #     State(component_id='my_store', component_property="data"),
-    # ],
     prevent_initial_call=True
 )
 def generate_dropdown_options_for_edge(
@@ -557,7 +513,8 @@ def add_edge_to_store(
     dropdown_nodeto_value,
     my_store_data
 ):
-
+    '''
+    '''
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
 
@@ -592,12 +549,12 @@ def add_edge_to_store(
     prevent_initial_call=True
 )
 def generate_cyto(my_store_data):
+    '''
+    '''
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
 
-    print(my_store_data)
     cyto_elements=list()
-
     #if there is at least one generic node
     #unwrap the nodes
     if len(my_store_data['generic_nodes'].keys())>0:
@@ -654,32 +611,18 @@ def generate_cyto(my_store_data):
     prevent_initial_call=True
 )
 def prepare_property_section(cyto_tapNodeData,my_store_data):
+    '''
+    '''
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
     #i think the best way to know if it is a node or an edge is to check the callback context?
     #or have two callbacks
-    print(cyto_tapNodeData)
-    pprint(my_store_data)
-    print(my_store_data['generic_nodes'][cyto_tapNodeData['id']])
-    print(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])
     if len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])>0:
-        #do something
-        #pass
-        # properties=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()
-        # values=[my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'][temp_key] for temp_key in my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()]
         #when things are stored in the data format, we don thave to do anything
         #could return thi directly
         table_properties_data=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']
     elif len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])==0:
-        #properties=[]
-        #values=[]
-        # table_properties_data=[
-        #     {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
-        # ]
         table_properties_data=None
-    #temp_panda=pd.DataFrame.from_dict({'property':properties,'value':values})
-    #data = temp_panda.to_dict(orient='records')
-
 
     #how do we get the label that this particular node is?
     #we cant. or at least we shouldnt? because nodes can have multiple labels
@@ -712,19 +655,14 @@ def add_property(
     input_addproperty_value_value,
     table_properties_data
 ):
-    pprint(table_properties_data)
-    #pass
-    # if type(my_store_data)!=dict:
-    #     my_store_data=jsons.loads(my_store_data)
+    '''
+    '''
     ####
     #!!!!
     #we need to create some kind of exception handling if they put values in both
     #for now we only accept values from the dropdown
     #!!!!
     ####
-    #total_panda = pd.read_json(response.json(), orient="records")
-    #    properties=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()
-    #    values=[my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'][temp_key] for temp_key in my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()]
     if table_properties_data != None:
         table_properties_data.append(
             {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
@@ -756,17 +694,11 @@ def store_properties(
     cyto_tapNodeData,
     my_store_data
 ):
-#     pass
+    '''
+    '''
     if type(my_store_data)!=dict:
         my_store_data=jsons.loads(my_store_data)
     my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']=table_properties_data
-
-
-    print('123'*20)
-    pprint(my_store_data)
-
-
-
 
     return jsons.dumps(my_store_data)
 
