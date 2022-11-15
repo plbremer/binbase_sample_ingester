@@ -401,433 +401,433 @@ app.layout = html.Div(
 
 
 
-# #this is the callback that searches for matching generic nodes that already exist in the database
-# @app.callback(
-#     [
-#         Output(component_id='dropdown_nodesearch', component_property="options"),
-#         Output(component_id='my_store', component_property="data"),
-#     ],
-#     [
-#         Input(component_id='button_nodesearch', component_property='n_clicks'),
-#     ],
-#     [
-#         State(component_id='input_nodesearch', component_property="value"),
-#         State(component_id='my_store', component_property="data"),
-#     ],
-#     prevent_initial_call=True
-# )
-# def find_best_node_matches(
-#     button_nodesearch_n_clicks,
-#     input_nodesearch_value,
-#     my_store_data
-# ): 
-#     '''
-#     '''
+#this is the callback that searches for matching generic nodes that already exist in the database
+@app.callback(
+    [
+        Output(component_id='dropdown_nodesearch', component_property="options"),
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_nodesearch', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='input_nodesearch', component_property="value"),
+        State(component_id='my_store', component_property="data"),
+    ],
+    prevent_initial_call=True
+)
+def find_best_node_matches(
+    button_nodesearch_n_clicks,
+    input_nodesearch_value,
+    my_store_data
+): 
+    '''
+    '''
     
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
 
-#     string_node_id_list_pairs=my_FrontendHelper.generate_nodes_from_freetext_string(input_nodesearch_value)
-#     #form of temp results:[('Liver Neoplasms', ['C04.588.274.623', 'C06.301.623', 'C06.552.697']), ('Ear Neoplasms', ['C04.588.443.665.312', 'C09.218.334', 'C09.647.312']),
-#     graph_db_matching_records=list()
-#     for freetext_match in string_node_id_list_pairs:
-#         for counter,node in enumerate(freetext_match[1]):
-#         #we accidentally overwrote mesh labels that appeared multiple times in our note_and_attribute_jsons
-#         #so this funciton needs to get reworked
+    string_node_id_list_pairs=my_FrontendHelper.generate_nodes_from_freetext_string(input_nodesearch_value)
+    #form of temp results:[('Liver Neoplasms', ['C04.588.274.623', 'C06.301.623', 'C06.552.697']), ('Ear Neoplasms', ['C04.588.443.665.312', 'C09.218.334', 'C09.647.312']),
+    graph_db_matching_records=list()
+    for freetext_match in string_node_id_list_pairs:
+        for counter,node in enumerate(freetext_match[1]):
+        #we accidentally overwrote mesh labels that appeared multiple times in our note_and_attribute_jsons
+        #so this funciton needs to get reworked
         
-#         #maybe can improve speed with "where OR OR OR" eg 1 call?
-#         #seems we might need a different index
-#             #for the moment, we are making the design decision that a text strin must automatically confer all nodes to which it belongs
-#             #eg, the user is not interested in obtaining all of the results for all of the node id for some "Iris Neoplasms"
-#             #so we only need the first    
-#             if counter>=1:
-#                 continue
-#             graph_db_matching_records.append(my_FrontendHelper.get_node_labels_for_string(node,driver)[0])
+        #maybe can improve speed with "where OR OR OR" eg 1 call?
+        #seems we might need a different index
+            #for the moment, we are making the design decision that a text strin must automatically confer all nodes to which it belongs
+            #eg, the user is not interested in obtaining all of the results for all of the node id for some "Iris Neoplasms"
+            #so we only need the first    
+            if counter>=1:
+                continue
+            graph_db_matching_records.append(my_FrontendHelper.get_node_labels_for_string(node,driver)[0])
 
     
-#     print(string_node_id_list_pairs)
+    print(string_node_id_list_pairs)
     
-#     #convert to a dict for convenient access to the option that we want in storage
-#     stored_options_dict={
-#         element[0]:element[1] for element in string_node_id_list_pairs
-#     }
-#     my_store_data['search_node_compressed_results']=stored_options_dict
-#     #driver.close()
-#     displayed_string_list=list()
-#     for i in range(len(graph_db_matching_records)):
-#         displayed_string_list.append(
-#             my_FrontendHelper.construct_smart_node_selection_options(graph_db_matching_records[i],string_node_id_list_pairs[i])
-#         )
+    #convert to a dict for convenient access to the option that we want in storage
+    stored_options_dict={
+        element[0]:element[1] for element in string_node_id_list_pairs
+    }
+    my_store_data['search_node_compressed_results']=stored_options_dict
+    #driver.close()
+    displayed_string_list=list()
+    for i in range(len(graph_db_matching_records)):
+        displayed_string_list.append(
+            my_FrontendHelper.construct_smart_node_selection_options(graph_db_matching_records[i],string_node_id_list_pairs[i])
+        )
     
-#     returned_options_dict=[
-#         {'value':string_node_id_list_pairs[i][0], 'label':displayed_string_list[i]} for i in range(len(displayed_string_list))
-#     ]
-#     print(my_store_data)
-#     return [returned_options_dict,jsons.dumps(my_store_data)]
+    returned_options_dict=[
+        {'value':string_node_id_list_pairs[i][0], 'label':displayed_string_list[i]} for i in range(len(displayed_string_list))
+    ]
+    print(my_store_data)
+    return [returned_options_dict,jsons.dumps(my_store_data)]
 
 
 
-# @app.callback(
-#     [
-#         Output(component_id='my_store', component_property="data"),
-#     ],
-#     [
-#         Input(component_id='button_nodeselect', component_property='n_clicks'),
-#     ],
-#     [
-#         State(component_id='dropdown_nodesearch', component_property="value"),
-#         State(component_id='my_store', component_property="data"),
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_nodeselect', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='dropdown_nodesearch', component_property="value"),
+        State(component_id='my_store', component_property="data"),
 
-#     ],
-#     prevent_initial_call=True
-# )
-# def add_generic_node_to_store(
-#     button_nodeselect_n_clicks,
-#     dropdown_nodesearch_value,
-#     my_store_data
-# ):
-#     '''
-#     '''
+    ],
+    prevent_initial_call=True
+)
+def add_generic_node_to_store(
+    button_nodeselect_n_clicks,
+    dropdown_nodesearch_value,
+    my_store_data
+):
+    '''
+    '''
 
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
-#     #if this is an already existing node
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    #if this is an already existing node
 
 
-#     my_SelectedNode=SelectedNode(dropdown_nodesearch_value,'existing_node',my_store_data['search_node_compressed_results'])
-#     my_store_data['generic_nodes'][dropdown_nodesearch_value]=my_SelectedNode
-#     #if this is a new node
+    my_SelectedNode=SelectedNode(dropdown_nodesearch_value,'existing_node',my_store_data['search_node_compressed_results'])
+    my_store_data['generic_nodes'][dropdown_nodesearch_value]=my_SelectedNode
+    #if this is a new node
 
-#     return jsons.dumps(my_store_data)
+    return jsons.dumps(my_store_data)
 
-# @app.callback(
-#     [
-#         Output(component_id='my_store', component_property="data"),
-#     ],
-#     [
-#         Input(component_id='button_createnode', component_property='n_clicks')
-#     ],
-#     [
-#         State(component_id='dropdown_createnode_labels', component_property="value"),
-#         State(component_id='input_createnode_label', component_property="value"),
-#         State(component_id='input_createnode_nodeid', component_property="value"),
-#         State(component_id='my_store', component_property="data"),
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_createnode', component_property='n_clicks')
+    ],
+    [
+        State(component_id='dropdown_createnode_labels', component_property="value"),
+        State(component_id='input_createnode_label', component_property="value"),
+        State(component_id='input_createnode_nodeid', component_property="value"),
+        State(component_id='my_store', component_property="data"),
 
-#     ],
-#     prevent_initial_call=True
-# )
-# def add_created_node_to_store(
-#     button_createnode_n_clicks,
-#     dropdown_createnode_labeloptions_value,
-#     input_createnode_label_value,
-#     input_createnode_nodeid_value,
-#     my_store_data
-# ):
-#     '''
-#     '''
+    ],
+    prevent_initial_call=True
+)
+def add_created_node_to_store(
+    button_createnode_n_clicks,
+    dropdown_createnode_labeloptions_value,
+    input_createnode_label_value,
+    input_createnode_nodeid_value,
+    my_store_data
+):
+    '''
+    '''
     
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
-#     #if this is an already existing node
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    #if this is an already existing node
 
-#     my_SelectedNode=SelectedNode(
-#         input_createnode_nodeid_value,
-#         'created_node',
-#         {input_createnode_nodeid_value:input_createnode_nodeid_value}
-#     )
-#     ####
-#     #!!!!
-#     #we need to create some kind of exception handling if they put values in both
-#     #for now we only accept values from the dropdown
-#     #!!!!
-#     ####
-#     my_SelectedNode.set_label(dropdown_createnode_labeloptions_value)
-#     my_store_data['generic_nodes'][input_createnode_nodeid_value]=my_SelectedNode#jsons.dumps(my_SelectedNode)
+    my_SelectedNode=SelectedNode(
+        input_createnode_nodeid_value,
+        'created_node',
+        {input_createnode_nodeid_value:input_createnode_nodeid_value}
+    )
+    ####
+    #!!!!
+    #we need to create some kind of exception handling if they put values in both
+    #for now we only accept values from the dropdown
+    #!!!!
+    ####
+    my_SelectedNode.set_label(dropdown_createnode_labeloptions_value)
+    my_store_data['generic_nodes'][input_createnode_nodeid_value]=my_SelectedNode#jsons.dumps(my_SelectedNode)
 
-#     return jsons.dumps(my_store_data)
-
-
-# @app.callback(
-#     [
-#         Output(component_id='my_store', component_property="data"),
-#     ],
-#     [
-#         Input(component_id='button_addsamples', component_property='n_clicks'),
-#     ],
-#     [
-#         State(component_id='input_samplenumber', component_property="value"),
-#         State(component_id='my_store', component_property="data"),
-#     ],
-#     prevent_initial_call=True
-# )
-# def add_sample_node_to_store(
-#     button_addsamples_n_clicks,
-#     input_samplenumber_value,
-#     my_store_data
-# ):
-#     '''
-#     '''
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
-
-#     #should have assertion statement that number is integer
-#     #my_store_data['sample_nodes']=list()
-#     for i in range(input_samplenumber_value):
-#         my_store_data['sample_nodes'].append(str(i))
-
-#     return jsons.dumps(my_store_data)
+    return jsons.dumps(my_store_data)
 
 
-# @app.callback(
-#     [
-#         Output(component_id='dropdown_nodefrom', component_property="options"),
-#         Output(component_id='dropdown_nodeto', component_property="options"),
-#     ],
-#     [
-#         Input(component_id='my_store', component_property="data"),
-#     ],
-#     prevent_initial_call=True
-# )
-# def generate_dropdown_options_for_edge(
-#     my_store_data
-# ):
-#     '''
-#     create a new edge
-#     '''
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_addsamples', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='input_samplenumber', component_property="value"),
+        State(component_id='my_store', component_property="data"),
+    ],
+    prevent_initial_call=True
+)
+def add_sample_node_to_store(
+    button_addsamples_n_clicks,
+    input_samplenumber_value,
+    my_store_data
+):
+    '''
+    '''
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
 
-#     output_options=list()
-#     if 'generic_nodes' in my_store_data.keys():
-#         for temp_node in my_store_data['generic_nodes']:
-#             output_options.append(
-#                 {'value':temp_node,'label':temp_node}
-#             )
-#     if 'sample_nodes' in my_store_data.keys():
-#         output_options.append(
-#             {'value': 'Samples', 'label': 'Samples'}
-#         )
+    #should have assertion statement that number is integer
+    #my_store_data['sample_nodes']=list()
+    for i in range(input_samplenumber_value):
+        my_store_data['sample_nodes'].append(str(i))
 
-#     #if we found none, then the length is zero
-#     if len(output_options)==0:
-#         output_options.append(
-#             {'value': 'no node selected', 'label': 'no node selected'}
-#         )
-
-#     return [output_options,output_options]
-
-# @app.callback(
-#     [
-#         Output(component_id='my_store', component_property="data"),
-#     ],
-#     [
-#         Input(component_id='button_createedge', component_property='n_clicks'),
-#     ],
-#     [
-#         State(component_id='dropdown_createedge_labels', component_property="value"),
-#         State(component_id='input_createedge_label', component_property="value"),
-#         State(component_id='dropdown_nodefrom', component_property="value"),
-#         State(component_id='dropdown_nodeto', component_property="value"),
-#         State(component_id='my_store', component_property="data"),
-#     ],
-#     prevent_initial_call=True
-# )
-# def add_edge_to_store(
-#     button_addedge_n_clicks,
-#     dropdown_createedge_labels_value,
-#     input_createedge_label_value,
-#     dropdown_nodefrom_value,
-#     dropdown_nodeto_value,
-#     my_store_data
-# ):
-#     '''
-#     '''
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
-
-#     ####
-#     #!!!!
-#     #we need to create some kind of exception handling if they put values in both
-#     #for now we only accept values from the dropdown
-#     #!!!!
-#     #need to disallow sample to sample edges
-#     ####   
-#     my_store_data['edges'].append(
-#         {
-#             'from':dropdown_nodefrom_value,
-#             'to':dropdown_nodeto_value,
-#             'type':dropdown_createedge_labels_value
-#         }
-#     )
-
-#     pprint(my_store_data)
+    return jsons.dumps(my_store_data)
 
 
-#     return jsons.dumps(my_store_data)
+@app.callback(
+    [
+        Output(component_id='dropdown_nodefrom', component_property="options"),
+        Output(component_id='dropdown_nodeto', component_property="options"),
+    ],
+    [
+        Input(component_id='my_store', component_property="data"),
+    ],
+    prevent_initial_call=True
+)
+def generate_dropdown_options_for_edge(
+    my_store_data
+):
+    '''
+    create a new edge
+    '''
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+
+    output_options=list()
+    if 'generic_nodes' in my_store_data.keys():
+        for temp_node in my_store_data['generic_nodes']:
+            output_options.append(
+                {'value':temp_node,'label':temp_node}
+            )
+    if 'sample_nodes' in my_store_data.keys():
+        output_options.append(
+            {'value': 'Samples', 'label': 'Samples'}
+        )
+
+    #if we found none, then the length is zero
+    if len(output_options)==0:
+        output_options.append(
+            {'value': 'no node selected', 'label': 'no node selected'}
+        )
+
+    return [output_options,output_options]
+
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_createedge', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='dropdown_createedge_labels', component_property="value"),
+        State(component_id='input_createedge_label', component_property="value"),
+        State(component_id='dropdown_nodefrom', component_property="value"),
+        State(component_id='dropdown_nodeto', component_property="value"),
+        State(component_id='my_store', component_property="data"),
+    ],
+    prevent_initial_call=True
+)
+def add_edge_to_store(
+    button_addedge_n_clicks,
+    dropdown_createedge_labels_value,
+    input_createedge_label_value,
+    dropdown_nodefrom_value,
+    dropdown_nodeto_value,
+    my_store_data
+):
+    '''
+    '''
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+
+    ####
+    #!!!!
+    #we need to create some kind of exception handling if they put values in both
+    #for now we only accept values from the dropdown
+    #!!!!
+    #need to disallow sample to sample edges
+    ####   
+    my_store_data['edges'].append(
+        {
+            'from':dropdown_nodefrom_value,
+            'to':dropdown_nodeto_value,
+            'type':dropdown_createedge_labels_value
+        }
+    )
+
+    pprint(my_store_data)
 
 
-# @app.callback(
-#     [
-#         Output(component_id='cyto', component_property="elements"),
-#     ],
-#     [
-#         Input(component_id='my_store', component_property="data"),
-#     ],
-#     prevent_initial_call=True
-# )
-# def generate_cyto(my_store_data):
-#     '''
-#     '''
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
-
-#     cyto_elements=list()
-#     #if there is at least one generic node
-#     #unwrap the nodes
-#     if len(my_store_data['generic_nodes'].keys())>0:
-#         for node_id in my_store_data['generic_nodes']:
-#             cyto_elements.append(
-#                 {
-#                     'data':{
-#                         'id':node_id,'label':node_id
-#                     }
-#                 }
-#             )
-
-#     #if there is at least one sample node
-#     #visualize them as one large conglomerate
-#     if len(my_store_data['sample_nodes'])>0:
-#         cyto_elements.append(
-#             {
-#                 'data':{
-#                     'id':'Samples','label':'Represents all samples'
-#                 }
-#             }
-#         )
-
-#     #if there is at least one edge
-#     #unwrap the edges
-#     if len(my_store_data['edges'])>0:
-#         for edge in my_store_data['edges']:
-#             cyto_elements.append(
-#                 {
-#                     'data':{
-#                         'source':edge['from'],
-#                         'target':edge['to'],
-#                         'label':edge['type'],
-#                         'id':time()
-#                     }
-#                 }
-#             )        
-
-#     return cyto_elements
+    return jsons.dumps(my_store_data)
 
 
-# @app.callback(
-#     [
-#         Output(component_id='dropdown_addproperty_keys', component_property='options'),
-#         #Output(component_id='input_addproperty_key', component_property='value')),
-#         Output(component_id='table_properties', component_property='data'),
-#     ],
-#     [
-#         Input(component_id='cyto', component_property='tapNodeData'),
-#     ],
-#     [
-#         State(component_id='my_store', component_property="data"),    
-#     ],
-#     prevent_initial_call=True
-# )
-# def prepare_property_section(cyto_tapNodeData,my_store_data):
-#     '''
-#     '''
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
-#     #i think the best way to know if it is a node or an edge is to check the callback context?
-#     #or have two callbacks
-#     if len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])>0:
-#         #when things are stored in the data format, we don thave to do anything
-#         #could return thi directly
-#         table_properties_data=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']
-#     elif len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])==0:
-#         table_properties_data=None
+@app.callback(
+    [
+        Output(component_id='cyto', component_property="elements"),
+    ],
+    [
+        Input(component_id='my_store', component_property="data"),
+    ],
+    prevent_initial_call=True
+)
+def generate_cyto(my_store_data):
+    '''
+    '''
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
 
-#     #how do we get the label that this particular node is?
-#     #we cant. or at least we shouldnt? because nodes can have multiple labels
-#     #so it a big headache. for the moment, we use the all labels option
-#     my_FrontendHelper.get_node_property_matrix()
-#     all_labels=my_FrontendHelper.property_dict['ALL_NODE_LABEL']
+    cyto_elements=list()
+    #if there is at least one generic node
+    #unwrap the nodes
+    if len(my_store_data['generic_nodes'].keys())>0:
+        for node_id in my_store_data['generic_nodes']:
+            cyto_elements.append(
+                {
+                    'data':{
+                        'id':node_id,'label':node_id
+                    }
+                }
+            )
 
-#     return [all_labels,table_properties_data]
+    #if there is at least one sample node
+    #visualize them as one large conglomerate
+    if len(my_store_data['sample_nodes'])>0:
+        cyto_elements.append(
+            {
+                'data':{
+                    'id':'Samples','label':'Represents all samples'
+                }
+            }
+        )
+
+    #if there is at least one edge
+    #unwrap the edges
+    if len(my_store_data['edges'])>0:
+        for edge in my_store_data['edges']:
+            cyto_elements.append(
+                {
+                    'data':{
+                        'source':edge['from'],
+                        'target':edge['to'],
+                        'label':edge['type'],
+                        'id':time()
+                    }
+                }
+            )        
+
+    return cyto_elements
+
+
+@app.callback(
+    [
+        Output(component_id='dropdown_addproperty_keys', component_property='options'),
+        #Output(component_id='input_addproperty_key', component_property='value')),
+        Output(component_id='table_properties', component_property='data'),
+    ],
+    [
+        Input(component_id='cyto', component_property='tapNodeData'),
+    ],
+    [
+        State(component_id='my_store', component_property="data"),    
+    ],
+    prevent_initial_call=True
+)
+def prepare_property_section(cyto_tapNodeData,my_store_data):
+    '''
+    '''
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    #i think the best way to know if it is a node or an edge is to check the callback context?
+    #or have two callbacks
+    if len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])>0:
+        #when things are stored in the data format, we don thave to do anything
+        #could return thi directly
+        table_properties_data=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']
+    elif len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])==0:
+        table_properties_data=None
+
+    #how do we get the label that this particular node is?
+    #we cant. or at least we shouldnt? because nodes can have multiple labels
+    #so it a big headache. for the moment, we use the all labels option
+    my_FrontendHelper.get_node_property_matrix()
+    all_labels=my_FrontendHelper.property_dict['ALL_NODE_LABEL']
+
+    return [all_labels,table_properties_data]
     
 
-# @app.callback(
-#     [
-#         Output(component_id='table_properties', component_property='data'),
-#     ],
-#     [
-#         Input(component_id='button_addproperty', component_property="n_clicks"),
-#     ],
-#     [
-#         State(component_id='dropdown_addproperty_keys', component_property="value"),
-#         State(component_id='input_addproperty_key', component_property="value"),
-#         State(component_id='input_addproperty_value', component_property="value"),
-#         State(component_id='table_properties', component_property='data')
-#     ],
-#     prevent_initial_call=True
-# )
-# def add_property(
-#     button_addproperty_n_clicks,
-#     dropdown_addproperty_keys_value,
-#     input_addproperty_key_value,
-#     input_addproperty_value_value,
-#     table_properties_data
-# ):
-#     '''
-#     '''
-#     ####
-#     #!!!!
-#     #we need to create some kind of exception handling if they put values in both
-#     #for now we only accept values from the dropdown
-#     #!!!!
-#     ####
-#     if table_properties_data != None:
-#         table_properties_data.append(
-#             {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
-#         )
-#     elif table_properties_data == None:
-#         table_properties_data=[
-#             {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
-#         ]
-#     pprint(table_properties_data)
-#     return table_properties_data
+@app.callback(
+    [
+        Output(component_id='table_properties', component_property='data'),
+    ],
+    [
+        Input(component_id='button_addproperty', component_property="n_clicks"),
+    ],
+    [
+        State(component_id='dropdown_addproperty_keys', component_property="value"),
+        State(component_id='input_addproperty_key', component_property="value"),
+        State(component_id='input_addproperty_value', component_property="value"),
+        State(component_id='table_properties', component_property='data')
+    ],
+    prevent_initial_call=True
+)
+def add_property(
+    button_addproperty_n_clicks,
+    dropdown_addproperty_keys_value,
+    input_addproperty_key_value,
+    input_addproperty_value_value,
+    table_properties_data
+):
+    '''
+    '''
+    ####
+    #!!!!
+    #we need to create some kind of exception handling if they put values in both
+    #for now we only accept values from the dropdown
+    #!!!!
+    ####
+    if table_properties_data != None:
+        table_properties_data.append(
+            {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
+        )
+    elif table_properties_data == None:
+        table_properties_data=[
+            {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
+        ]
+    pprint(table_properties_data)
+    return table_properties_data
 
-# @app.callback(
-#     [
-#         Output(component_id='my_store', component_property="data"),
-#     ],
-#     [
-#         Input(component_id='button_saveproperties', component_property='n_clicks'),
-#     ],
-#     [
-#         State(component_id='table_properties', component_property='data'),   
-#         State(component_id='cyto', component_property='tapNodeData'), 
-#         State(component_id='my_store', component_property="data")
-#     ],
-#     prevent_initial_call=True
-# )
-# def store_properties(
-#     button_saveproperties_n_clicks,
-#     table_properties_data,
-#     cyto_tapNodeData,
-#     my_store_data
-# ):
-#     '''
-#     '''
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
-#     my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']=table_properties_data
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_saveproperties', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='table_properties', component_property='data'),   
+        State(component_id='cyto', component_property='tapNodeData'), 
+        State(component_id='my_store', component_property="data")
+    ],
+    prevent_initial_call=True
+)
+def store_properties(
+    button_saveproperties_n_clicks,
+    table_properties_data,
+    cyto_tapNodeData,
+    my_store_data
+):
+    '''
+    '''
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']=table_properties_data
 
-#     return jsons.dumps(my_store_data)
+    return jsons.dumps(my_store_data)
 
 
 if __name__ == "__main__":
