@@ -80,6 +80,14 @@ app.layout = html.Div(
                         ),
                         html.Br(),
                         html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
                         dbc.Row(
                             children=[
                                 dbc.Row(html.H6('add property nodes')),
@@ -169,6 +177,10 @@ app.layout = html.Div(
                                 )
                             ]
                         ),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
                         html.Br(),
                         html.Br(),
                         dbc.Row(
@@ -288,70 +300,89 @@ app.layout = html.Div(
                                 ),
                             ]
                         ),
+                        html.Br(),
+                        html.Br(),
                         dbc.Row(
                             children=[
-                                dbc.Card(
+
+
+
+
+                                dbc.Row(
+                                    html.H6('Update node properties')
+                                ),
+                                dbc.Row(
                                     children=[
-                                        html.H6('Node/edge property adjuster'),
-                                        dcc.Dropdown(
-                                            id='dropdown_addproperty_keys',
-                                            options=[],
-                                            placeholder='choose existing propertykey',
-                                            multi=False,
-                                        ),  
-                                        dcc.Input(
-                                            id="input_addproperty_key",
-                                            type='text',
-                                            placeholder='add new property key'
+                                        dbc.Col(
+                                            dcc.Dropdown(
+                                                id='dropdown_addproperty_keys',
+                                                options=[],
+                                                placeholder='choose existing propertykey',
+                                                multi=False,
+                                            ),  
                                         ),
-                                        dcc.Input(
-                                            id="input_addproperty_value",
-                                            type='text',
-                                            placeholder='type property value'
-                                        ),
-                                        dbc.Button(
-                                            'Add this property key/value',
-                                            id='button_addproperty',
-                                        ),
-                                        dash_table.DataTable(
-                                            id='table_properties',
-                                            columns=[
-                                                {'name': 'Property', 'id': 'property'},
-                                                {'name': 'Value', 'id': 'value'}, 
-                                                #{'name': 'Sample Count', 'id': 'sample_count'}
-                                            ],
-                                            data=[],
-                                            page_current=0,
-                                            page_size=10,
-                                            #page_action='custom',
-                                            page_action='native',
-                                            #sort_action='custom',
-                                            sort_action='native',
-                                            sort_mode='multi',
-                                            #sort_by=[],
-                                            #filter_action='custom',
-                                            filter_action='native',
-                                            row_deletable=False,
-                                            #filter_query='',
-                                            style_header={
-                                                'backgroundColor': 'rgb(30, 30, 30)',
-                                                'color': 'white'
-                                            },
-                                            style_data={
-                                                'backgroundColor': 'rgb(50, 50, 50)',
-                                                'color': 'white'
-                                            },
-                                            style_cell={
-                                                'font-family':'sans-serif'
-                                            }
-                                        ),
-                                        dbc.Button(
-                                            'Save these properties',
-                                            id='button_saveproperties',
-                                        ),
-                                    ],
-                                    style={"width": "18rem"}
-                                ),                                 
+                                        dbc.Col(
+                                            dcc.Input(
+                                                id="input_addproperty_key",
+                                                type='text',
+                                                placeholder='add new property key'
+                                            ),
+                                        )
+                                    ]
+                                ),
+                                dbc.Row(
+                                    dcc.Input(
+                                        id="input_addproperty_value",
+                                        type='text',
+                                        placeholder='type property value'
+                                    ),
+                                ),
+                                dbc.Row(
+                                    dbc.Button(
+                                        'Add this property key/value',
+                                        id='button_addproperty',
+                                    ),
+                                ),
+                                dbc.Row(
+                                    dash_table.DataTable(
+                                        id='table_properties',
+                                        columns=[
+                                            {'name': 'Property', 'id': 'property'},
+                                            {'name': 'Value', 'id': 'value'}, 
+                                            #{'name': 'Sample Count', 'id': 'sample_count'}
+                                        ],
+                                        data=[],
+                                        page_current=0,
+                                        page_size=10,
+                                        #page_action='custom',
+                                        page_action='native',
+                                        #sort_action='custom',
+                                        sort_action='native',
+                                        sort_mode='multi',
+                                        #sort_by=[],
+                                        #filter_action='custom',
+                                        filter_action='native',
+                                        row_deletable=False,
+                                        #filter_query='',
+                                        style_header={
+                                            'backgroundColor': 'rgb(30, 30, 30)',
+                                            'color': 'white'
+                                        },
+                                        style_data={
+                                            'backgroundColor': 'rgb(50, 50, 50)',
+                                            'color': 'white'
+                                        },
+                                        style_cell={
+                                            'font-family':'sans-serif'
+                                        }
+                                    ),
+                                ),
+                                dbc.Row(
+                                    dbc.Button(
+                                        'Save these properties',
+                                        id='button_saveproperties',
+                                    ),
+                                ),
                             ]
                         ),
                     ],
