@@ -12,13 +12,13 @@ class NXParserNCBI:
         #based on
         #https://stackoverflow.com/questions/65973902/which-elements-from-networkx-graph-might-become-labels-at-neo4j-graph
         for temp_node in self.ncbi_nx.nodes:
-            self.ncbi_nx.nodes[temp_node]['labels']=':NCBI_NODE'
+            self.ncbi_nx.nodes[temp_node]['labels']=':NCBI_NODE:ALL_NODE_LABEL'
             for attribute in ['acronym','includes','authority','synonym','genbank_acronym','equivalent_name','type_material','genbank_synonym','common_name','blast_name','in-part','genbank_common_name']:
                 try:
                     del self.ncbi_nx.nodes[temp_node][attribute]
                 except KeyError:
                     continue
-            self.ncbi_nx.nodes[temp_node]['ncbi_id']=temp_node
+            #self.ncbi_nx.nodes[temp_node]['ncbi_id']=temp_node
         for temp_edge in self.ncbi_nx.edges:
             self.ncbi_nx.edges[temp_edge]['label']='PARENT_OF'
 

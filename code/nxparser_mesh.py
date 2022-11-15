@@ -50,6 +50,8 @@ class NXParserMesh:
             print(temp_mesh_entry['MH'])
             hold=input('found an entry with multiple labels')
         end_node_label=temp_mesh_entry['MH'][0]
+        common_name=temp_mesh_entry['ENTRY']
+        common_name=[element for element in common_name if ('|' not in element)]
 
 
         for temp_string_path in nodepath_string_path_list:
@@ -62,6 +64,8 @@ class NXParserMesh:
             #if 'A11' in node_paths:
                 nx.add_path(self.mesh_nx,node_paths)
             self.mesh_nx.nodes[node_paths[-1]]['mesh_label']=end_node_label
+            if len(common_name)>1:
+                self.mesh_nx.nodes[node_paths[-1]]['common_name']=common_name
 
     def get_current_headnodes(self):
         number_string_list=['01','02','03','04','05','06','07','08','09']+[str(i) for i in range(10,51)]
@@ -114,10 +118,10 @@ class NXParserMesh:
         self.mesh_nx.add_edges_from(temp_edges)
 
         #add the true headnode
-        self.mesh_nx.add_node('root',mesh_label='root')
+        self.mesh_nx.add_node('root_mesh',mesh_label='root_mesh')
 
         #connect the category headnoes to the true headnode
-        temp_edges=[('root',element) for element in self.current_headnodes]
+        temp_edges=[('root_mesh',element) for element in self.current_headnodes]
         self.mesh_nx.add_edges_from(temp_edges)
 
     def remove_mesh_subgraphs(self,headnodes_to_remove):
@@ -131,8 +135,13 @@ class NXParserMesh:
         #based on
         #https://stackoverflow.com/questions/65973902/which-elements-from-networkx-graph-might-become-labels-at-neo4j-graph
         for temp_node in self.mesh_nx.nodes:
-            self.mesh_nx.nodes[temp_node]['labels']=':MESH_NODE'
-            self.mesh_nx.nodes[temp_node]['mesh_id']=temp_node
+            for attribute in ['common_name']:
+                self.mesh_nx.nodes[temp_node]['labels']=':MESH_NODE:ALL_NODE_LABEL'
+                try:
+                    del self.mesh_nx.nodes[temp_node][attribute]
+                except KeyError:
+                    continue   
+            #self.mesh_nx.nodes[temp_node]['mesh_id']=temp_node
         for temp_edge in self.mesh_nx.edges:
             self.mesh_nx.edges[temp_edge]['label']='PARENT_OF'
 
