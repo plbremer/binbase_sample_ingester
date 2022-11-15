@@ -241,12 +241,12 @@ app.layout = html.Div(
                 ),  
                 dcc.Input(
                     id="input_addproperty_key",
-                    type='number',
+                    type='text',
                     placeholder='add new property key'
                 ),
                 dcc.Input(
                     id="input_addproperty_value",
-                    type='number',
+                    type='text',
                     placeholder='type property value'
                 ),
                 dbc.Button(
@@ -288,7 +288,7 @@ app.layout = html.Div(
                     }
                 ),
                 dbc.Button(
-                    'Add this property key/value',
+                    'Save these properties',
                     id='button_saveproperties',
                 ),
             ],
@@ -662,16 +662,23 @@ def prepare_property_section(cyto_tapNodeData,my_store_data):
     pprint(my_store_data)
     print(my_store_data['generic_nodes'][cyto_tapNodeData['id']])
     print(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])
-    if len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys())>0:
+    if len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])>0:
         #do something
         #pass
-        properties=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()
-        values=[my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'][temp_key] for temp_key in my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()]
+        # properties=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()
+        # values=[my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'][temp_key] for temp_key in my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()]
+        #when things are stored in the data format, we don thave to do anything
+        #could return thi directly
+        table_properties_data=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']
     elif len(my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'])==0:
-        properties=[]
-        values=[]
-    temp_panda=pd.DataFrame.from_dict({'property':properties,'value':values})
-    data = temp_panda.to_dict(orient='records')
+        #properties=[]
+        #values=[]
+        # table_properties_data=[
+        #     {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
+        # ]
+        table_properties_data=None
+    #temp_panda=pd.DataFrame.from_dict({'property':properties,'value':values})
+    #data = temp_panda.to_dict(orient='records')
 
 
     #how do we get the label that this particular node is?
@@ -680,7 +687,7 @@ def prepare_property_section(cyto_tapNodeData,my_store_data):
     my_FrontendHelper.get_node_property_matrix()
     all_labels=my_FrontendHelper.property_dict['ALL_NODE_LABEL']
 
-    return [all_labels,data]
+    return [all_labels,table_properties_data]
     
 
 @app.callback(
@@ -696,6 +703,7 @@ def prepare_property_section(cyto_tapNodeData,my_store_data):
         State(component_id='input_addproperty_value', component_property="value"),
         State(component_id='table_properties', component_property='data')
     ],
+    prevent_initial_call=True
 )
 def add_property(
     button_addproperty_n_clicks,
@@ -704,6 +712,7 @@ def add_property(
     input_addproperty_value_value,
     table_properties_data
 ):
+    pprint(table_properties_data)
     #pass
     # if type(my_store_data)!=dict:
     #     my_store_data=jsons.loads(my_store_data)
@@ -716,24 +725,51 @@ def add_property(
     #total_panda = pd.read_json(response.json(), orient="records")
     #    properties=my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()
     #    values=[my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'][temp_key] for temp_key in my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties'].keys()]
+    if table_properties_data != None:
+        table_properties_data.append(
+            {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
+        )
+    elif table_properties_data == None:
+        table_properties_data=[
+            {'property':dropdown_addproperty_keys_value,'value':input_addproperty_value_value}
+        ]
+    pprint(table_properties_data)
+    return table_properties_data
 
-    print()
-
-# @app.callback(
-#     [
-#         Output(component_id='my_store', component_property="data"),
-#     ],
-#     [
-#         Input(component_id='button_saveproperties', component_property='n_clicks'),
-#     ],
-#     [
-#         State(component_id='table_properties', component_property='data'),    
-#     ],
-# )
-# def store_properties():
+@app.callback(
+    [
+        Output(component_id='my_store', component_property="data"),
+    ],
+    [
+        Input(component_id='button_saveproperties', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='table_properties', component_property='data'),   
+        State(component_id='cyto', component_property='tapNodeData'), 
+        State(component_id='my_store', component_property="data")
+    ],
+    prevent_initial_call=True
+)
+def store_properties(
+    button_saveproperties_n_clicks,
+    table_properties_data,
+    cyto_tapNodeData,
+    my_store_data
+):
 #     pass
-#     if type(my_store_data)!=dict:
-#         my_store_data=jsons.loads(my_store_data)
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']=table_properties_data
+
+
+    print('123'*20)
+    pprint(my_store_data)
+
+
+
+
+    return jsons.dumps(my_store_data)
+
 
 if __name__ == "__main__":
     app.run(debug=True)#, host='0.0.0.0')

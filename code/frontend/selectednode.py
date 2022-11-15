@@ -18,7 +18,8 @@ class SelectedNode:
         #FrontendHelper.
         # elif existing_node=='new_node':
         #     self.generic_node_ids_to_connect_to=
-        self.properties=dict()
+        self.properties=list()
+        #self.values=dict()
 
 
     def set_label(self,label_value):
