@@ -390,6 +390,8 @@ app.layout = html.Div(
                 )
             ]
         ),
+        html.Br(),
+        html.Br(),
         dbc.Card(
             children=[
                 dcc.Download(
@@ -839,6 +841,46 @@ def store_properties(
     my_store_data['generic_nodes'][cyto_tapNodeData['id']]['properties']=table_properties_data
 
     return jsons.dumps(my_store_data)
+
+
+@app.callback(
+    [
+        Output(component_id='download_graph', component_property="data"),
+    ],
+    [
+        Input(component_id='button_download_graph', component_property='n_clicks'),
+    ],
+    [
+        State(component_id='my_store', component_property="data")
+    ],
+    prevent_initial_call=True
+)
+def download_graph(
+    button_download_graph_n_clicks,
+    my_store_data
+):
+    if type(my_store_data)!=dict:
+        my_store_data=jsons.loads(my_store_data)
+    
+    
+    # pprint(cyto_sample_nature_elements)
+    # return [
+    #     dict(
+    #         content=cyto_sample_nature_elements,
+    #         filename='temp_graph_as_txt.txt'
+    #     )
+    # ]
+    # print('-'*50)
+    # print(
+    #     json.dumps(
+    #         cyto_sample_nature_elements
+    #     )
+    # )
+    return dict(
+        content=json.dumps(my_store_data),
+        filename='for_upload_to_db.txt'
+    )
+
 
 
 if __name__ == "__main__":
