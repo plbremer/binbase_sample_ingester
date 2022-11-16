@@ -390,6 +390,17 @@ app.layout = html.Div(
                 )
             ]
         ),
+        dbc.Card(
+            children=[
+                dcc.Download(
+                    id='download_graph'
+                ),
+                dbc.Button(
+                    'Download Graph',
+                    id='button_download_graph',
+                ),
+            ]
+        )
     ]
 )
 
