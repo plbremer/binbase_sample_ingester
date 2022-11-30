@@ -877,7 +877,7 @@ def download_graph(
     #     )
     # )
     return dict(
-        content=json.dumps(my_store_data),
+        content=json.dumps(my_store_data,indent=4),
         filename='for_upload_to_db.txt'
     )
 
