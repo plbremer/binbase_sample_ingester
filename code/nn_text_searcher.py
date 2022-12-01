@@ -33,7 +33,7 @@ class NNTextSearcher:
 
     def create_NN_model(self):
         self.NN_model=NearestNeighbors(
-            n_neighbors=100,
+            n_neighbors=40,
             n_jobs=5,
             metric='cosine'
         )

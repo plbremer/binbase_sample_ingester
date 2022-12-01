@@ -3,3 +3,6 @@
 *.json
 *.bin
 *.graphml
+ontology_lambda_test/
+ontology_lambda_test_venv/
+resources/
