@@ -27,12 +27,12 @@ def handler(event, context):
 
 
 
-
+    temp=json.loads(event['body'])
     #new values - make as a dict in case we want to encapuslate the "column" that the value came from in the excel file
-    customer_added_values_keys=list(event['customer_added_values'].keys())
+    customer_added_values_keys=list(temp['customer_added_values'].keys())
 
     #increase customer_added json with whatever is fresh
-    customer_added.update(event['customer_added_values'])
+    customer_added.update(temp['customer_added_values'])
     #increase training list by whatever is fresh
     augmented_tfidf_vectorizer_training_set=tfidf_vectorizer_training_set+customer_added_values_keys
     
