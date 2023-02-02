@@ -41,7 +41,7 @@ class NNTextSearcher:
 
 
 if __name__ =="__main__":
-    my_NNTextSearcher=NNTextSearcher('../intermediate_results/attribute_node_id_pairs/')
+    my_NNTextSearcher=NNTextSearcher('../intermediate_results/attribute_node_id_pairs_lowercase/')
     print(len(my_NNTextSearcher.total_node_id_dict))
     my_NNTextSearcher.create_tfidf_matrix()
     my_NNTextSearcher.create_NN_model()

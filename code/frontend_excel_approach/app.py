@@ -92,7 +92,7 @@ def parse_contents(contents):#, filename, date):
     #####
 
     #for now, we pretend like we spent time parsing this excel file
-    species_to_curate=['humanz', 'rats']
+    species_to_curate=['homo sapiens', 'rats']
     organs_to_curate=['liver','lungz ']
     disease_to_curate=['lung cancer']
     genes_to_curate=['TP54','APOE','AR']

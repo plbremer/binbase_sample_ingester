@@ -11,9 +11,22 @@ class GeneTSVParser:
         '''
         we assume that 'Symbol' and 'Description' are what we need to complete this
         '''
-        symbol_mapping=dict(zip(self.gene_panda['Symbol'].tolist(),self.gene_panda['NCBI GeneID'].tolist()))
-        description_mapping=dict(zip(self.gene_panda['Description'].tolist(),self.gene_panda['NCBI GeneID'].tolist()))
-        self.total_feature_node_id_dict={**symbol_mapping,**description_mapping}
+        # symbol_mapping=dict(zip(self.gene_panda['Symbol'].tolist(),self.gene_panda['NCBI GeneID'].tolist()))
+        # description_mapping=dict(zip(self.gene_panda['Description'].tolist(),self.gene_panda['NCBI GeneID'].tolist()))
+        # self.total_feature_node_id_dict={**symbol_mapping,**description_mapping}
+
+        self.total_feature_node_id_dict=dict()
+        for index, series in self.gene_panda.iterrows():
+            self.total_feature_node_id_dict[series['Symbol']]={
+                'node_ids':[series['NCBI GeneID']],
+                'formal_word':[series['Description']]
+            }
+
+            self.total_feature_node_id_dict[series['Description']]={
+                'node_ids':[series['NCBI GeneID']],
+                'formal_word':[series['Description']]
+            }
+
 
 if __name__=="__main__":
     my_GeneTSVParser=GeneTSVParser('/home/rictuar/coding_projects/fiehn_work/binbase_sample_ingester/resources/ncbi_genes_human.tsv')
